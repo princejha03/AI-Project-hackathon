@@ -1,0 +1,110 @@
+[
+  {
+    "name": "truesignal_sanitizer_Validators_encodeHtml",
+    "kind": "sanitizer",
+    "function": "Validators.encodeHtml",
+    "queryName": "XSS_Reflected",
+    "attackClass": "xss",
+    "language": "Java",
+    "group": "Java_Custom",
+    "cxql": "// TrueSignal override \u2014 add custom sanitizer: Validators.encodeHtml\n// Evidence: 4 dismissals, confidence 0.87\nresult = base.Reflected_XSS();\nCxList customSanitizer = All.FindByMemberAccess(\"Validators.encodeHtml\");\nresult = result - result.InfluencedBy(customSanitizer.DataInfluencedBy(result));\n",
+    "confidence": 0.87,
+    "evidence": {
+      "code_reasons": [
+        "HTML-encodes <, >, &, and quote characters",
+        "encoded output cannot break out of the surrounding markup"
+      ],
+      "triage_support": [
+        "CX-1001",
+        "CX-1001",
+        "CX-1001",
+        "CX-1001"
+      ],
+      "triage_count": 4,
+      "notes": "4 past dismissals reference this function as the reason.",
+      "feedback_adjustment": 0.0,
+      "effective_confidence": 0.87
+    }
+  },
+  {
+    "name": "truesignal_sanitizer_Validators_escapeLdap",
+    "kind": "sanitizer",
+    "function": "Validators.escapeLdap",
+    "queryName": "LDAP_Injection",
+    "attackClass": "ldap_injection",
+    "language": "Java",
+    "group": "Java_Custom",
+    "cxql": "// TrueSignal override \u2014 add custom sanitizer: Validators.escapeLdap\n// Evidence: 4 dismissals, confidence 0.87\nresult = base.LDAP_Injection();\nCxList customSanitizer = All.FindByMemberAccess(\"Validators.escapeLdap\");\nresult = result - result.InfluencedBy(customSanitizer.DataInfluencedBy(result));\n",
+    "confidence": 0.87,
+    "evidence": {
+      "code_reasons": [
+        "escapes LDAP special characters per RFC 4515",
+        "escaped metacharacters cannot alter the search filter"
+      ],
+      "triage_support": [
+        "CX-1003",
+        "CX-1003",
+        "CX-1003",
+        "CX-1003"
+      ],
+      "triage_count": 4,
+      "notes": "4 past dismissals reference this function as the reason.",
+      "feedback_adjustment": 0.0,
+      "effective_confidence": 0.87
+    }
+  },
+  {
+    "name": "truesignal_sanitizer_Validators_sanitizePath",
+    "kind": "sanitizer",
+    "function": "Validators.sanitizePath",
+    "queryName": "Path_Traversal",
+    "attackClass": "path_traversal",
+    "language": "Java",
+    "group": "Java_Custom",
+    "cxql": "// TrueSignal override \u2014 add custom sanitizer: Validators.sanitizePath\n// Evidence: 4 dismissals, confidence 0.87\nresult = base.Path_Traversal();\nCxList customSanitizer = All.FindByMemberAccess(\"Validators.sanitizePath\");\nresult = result - result.InfluencedBy(customSanitizer.DataInfluencedBy(result));\n",
+    "confidence": 0.87,
+    "evidence": {
+      "code_reasons": [
+        "rejects/strips \"..\" path-traversal sequences",
+        "restricts the result to a safe filename character set"
+      ],
+      "triage_support": [
+        "CX-1006",
+        "CX-1006",
+        "CX-1006",
+        "CX-1006"
+      ],
+      "triage_count": 4,
+      "notes": "4 past dismissals reference this function as the reason.",
+      "feedback_adjustment": 0.0,
+      "effective_confidence": 0.87
+    }
+  },
+  {
+    "name": "truesignal_sanitizer_Validators_validateUrl",
+    "kind": "sanitizer",
+    "function": "Validators.validateUrl",
+    "queryName": "SSRF",
+    "attackClass": "ssrf",
+    "language": "Java",
+    "group": "Java_Custom",
+    "cxql": "// TrueSignal override \u2014 add custom sanitizer: Validators.validateUrl\n// Evidence: 4 dismissals, confidence 0.87\nresult = base.Server_Side_Request_Forgery();\nCxList customSanitizer = All.FindByMemberAccess(\"Validators.validateUrl\");\nresult = result - result.InfluencedBy(customSanitizer.DataInfluencedBy(result));\n",
+    "confidence": 0.87,
+    "evidence": {
+      "code_reasons": [
+        "checks the target host against a fixed allow-list",
+        "requests to hosts outside the allow-list are rejected"
+      ],
+      "triage_support": [
+        "CX-1007",
+        "CX-1007",
+        "CX-1007",
+        "CX-1007"
+      ],
+      "triage_count": 4,
+      "notes": "4 past dismissals reference this function as the reason.",
+      "feedback_adjustment": 0.0,
+      "effective_confidence": 0.87
+    }
+  }
+]

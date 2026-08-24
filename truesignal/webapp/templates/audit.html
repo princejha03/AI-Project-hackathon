@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% block title %}Audit {{ finding.id }} - Checkmarx TrueSignal{% endblock %}
+{% block content %}
+  <div class="page-head">
+    <div>
+      <h1>Audit <code>{{ finding.id }}</code></h1>
+    </div>
+    <a class="btn" href="{{ url_for('findings', pid=pid) }}">&larr; Findings</a>
+  </div>
+
+  <div class="card">
+    <p style="margin-top:0">
+      <span class="pill pill-{{ finding.severity|lower }}">{{ finding.severity }}</span>
+      <strong>{{ finding.queryName }}</strong> &middot;
+      <span class="pill pill-{{ 'downgraded' if finding.state == 'NOT_EXPLOITABLE' else 'open' }}">{{ finding.state }}</span>
+    </p>
+    <h3>Taint path <span class="dim small">click a step to see its code</span></h3>
+    <div class="flow-graph" id="flow-graph">
+      {% for step in path %}
+        <button type="button" class="flow-node flow-{{ step.role }} {{ 'active' if loop.first }}"
+                data-flow-index="{{ loop.index0 }}" aria-expanded="{{ 'true' if loop.first else 'false' }}"
+                aria-controls="flow-panel-{{ loop.index0 }}">
+          <span class="flow-node-icon">
+            {% if step.role == 'source' %}
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 3v12M6 10l6 6 6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 21h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+            {% elif step.role == 'sink' %}
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="4.5" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="1.4" fill="currentColor"/></svg>
+            {% else %}
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="3.5" y="7" width="17" height="10" rx="2.2" stroke="currentColor" stroke-width="1.6"/><path d="M1.5 12h2M20.5 12h2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+            {% endif %}
+          </span>
+          <span class="flow-node-text">
+            <span class="flow-node-role">{{ step.role }}</span>
+            <code class="flow-node-name">{{ step.node }}</code>
+          </span>
+        </button>
+        {% if not loop.last %}<span class="flow-connector" aria-hidden="true"></span>{% endif %}
+      {% endfor %}
+    </div>
+    <div id="flow-details">
+      {% for step in path %}
+        <div class="flow-detail-panel" id="flow-panel-{{ loop.index0 }}" {{ '' if loop.first else 'hidden' }}>
+          <div class="taint-node"><span class="role-badge">{{ step.role }}</span> <code>{{ step.node }}</code></div>
+          {% if step.resolved %}
+            <div class="dim small">{{ step.resolved.file }}:{{ step.resolved.line }}</div>
+            <pre class="snippet">{{ step.resolved.source }}</pre>
+          {% else %}
+            <div class="faint small">{{ step.file }}:{{ step.line }} (not resolvable to an indexed method — likely a framework/JDK call)</div>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  {% if suggestion %}
+  <div class="card">
+    <h3>AI suggestion <span class="dim small">not a decision &mdash; you choose</span></h3>
+    <p style="margin-top:0">
+      <span class="pill {{ 'pill-downgraded' if suggestion.verdict == 'not_exploitable' else 'pill-confirmed' if suggestion.verdict == 'confirmed' else 'pill-warn' }}">
+        {{ suggestion.verdict.replace('_', ' ')|title }}
+      </span>
+      <span class="dim small">confidence {{ '%.2f'|format(suggestion.confidence) }}</span>
+    </p>
+    <p class="small" style="margin-bottom:0">{{ suggestion.reason }}</p>
+  </div>
+  {% endif %}
+
+  <div class="card">
+    <h3>Record an audit decision</h3>
+    <form method="post">
+      <label>Result
+        <select name="decision" required>
+          <option value="not_exploitable" {{ "selected" if suggestion and suggestion.verdict == "not_exploitable" }}>Not Exploitable</option>
+          <option value="proposed_not_exploitable">Proposed Not Exploitable</option>
+          <option value="confirmed" {{ "selected" if suggestion and suggestion.verdict == "confirmed" }}>Confirmed</option>
+          <option value="to_verify" {{ "selected" if suggestion and suggestion.verdict == "to_verify" }}>To Verify</option>
+        </select>
+      </label>
+      <label>Comment
+        <textarea name="comment" rows="2" placeholder="e.g. goes through InputCleaner.sanitize, safe">{{ "AI suggestion: " + suggestion.reason if suggestion }}</textarea>
+      </label>
+      <label>Your name
+        <input type="text" name="user" value="{{ default_user }}" placeholder="auditor name">
+      </label>
+      <button class="btn btn-primary" type="submit">Save audit</button>
+    </form>
+  </div>
+
+  {% if history %}
+  <div class="card">
+    <h3>Audit history</h3>
+    <div class="grid-wrap">
+    <table class="grid">
+      <thead><tr><th>Date</th><th>User</th><th>Action</th><th>Resolution</th><th>Comment</th></tr></thead>
+      <tbody>
+        {% for d in history|reverse %}
+          <tr>
+            <td class="dim small">{{ d.date[:19] }}</td>
+            <td>{{ d.user }}</td>
+            <td>{{ d.action }}</td>
+            <td>{{ d.resolution }}</td>
+            <td class="dim">{{ d.comment }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    </div>
+  </div>
+  {% endif %}
+{% endblock %}

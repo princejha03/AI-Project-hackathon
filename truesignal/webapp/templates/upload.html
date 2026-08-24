@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Upload project - Checkmarx TrueSignal{% endblock %}
+{% block shell_class %}shell-narrow{% endblock %}
+{% block content %}
+  <div class="page-head"><h1>Upload a project</h1></div>
+  <p class="dim small">
+    Upload a .zip of a Java source tree. TrueSignal indexes it, runs an initial
+    scan for source&rarr;sink flows, and gives you an empty audit trail to start
+    triaging from — nothing is fabricated for a real upload.
+  </p>
+  <form class="card" method="post" enctype="multipart/form-data">
+    <label>Project name
+      <input type="text" name="name" required placeholder="e.g. checkout-service">
+    </label>
+    <label>Source archive (.zip)
+      <input type="file" name="archive" accept=".zip" required>
+    </label>
+    <button class="btn btn-primary" type="submit">Import &amp; scan</button>
+  </form>
+{% endblock %}

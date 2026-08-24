@@ -1,0 +1,30 @@
+[
+  {
+    "signature": "sanitizer:xss",
+    "role": "sanitizer",
+    "attack_class": "xss",
+    "outcome": "approved",
+    "timestamp": "2026-08-24T12:00:33.069720+00:00"
+  },
+  {
+    "signature": "sanitizer:ldap_injection",
+    "role": "sanitizer",
+    "attack_class": "ldap_injection",
+    "outcome": "approved",
+    "timestamp": "2026-08-24T12:00:33.073731+00:00"
+  },
+  {
+    "signature": "sanitizer:path_traversal",
+    "role": "sanitizer",
+    "attack_class": "path_traversal",
+    "outcome": "approved",
+    "timestamp": "2026-08-24T12:00:33.077631+00:00"
+  },
+  {
+    "signature": "sanitizer:ssrf",
+    "role": "sanitizer",
+    "attack_class": "ssrf",
+    "outcome": "approved",
+    "timestamp": "2026-08-24T12:00:33.081743+00:00"
+  }
+]

@@ -1,0 +1,7 @@
+{
+  "id": "toolbox-demo",
+  "name": "SecureApp (built-in demo \u2014 Path Traversal, XSS, SSRF, LDAP Injection)",
+  "created": "2026-08-17T07:18:02.544009+00:00",
+  "repo_path": "C:\\Users\\PrinceJ\\OneDrive - Checkmarx\\true signal\\demo-repo-toolbox",
+  "seeded": true
+}

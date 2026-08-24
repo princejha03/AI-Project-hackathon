@@ -1,0 +1,264 @@
+{
+  "project": "toolbox-demo",
+  "learned": [
+    {
+      "qualified_name": "Validators.encodeHtml",
+      "file": "src\\main\\java\\com\\webshop\\toolbox\\Validators.java",
+      "line": 33,
+      "role": "sanitizer",
+      "confidence": 0.87,
+      "attack_classes": [
+        "xss"
+      ],
+      "verdict": "APPROVED",
+      "verdict_reason": "code evidence + 4 supporting dismissals",
+      "evidence": {
+        "code_reasons": [
+          "HTML-encodes <, >, &, and quote characters",
+          "encoded output cannot break out of the surrounding markup"
+        ],
+        "triage_support": [
+          "CX-1001",
+          "CX-1001",
+          "CX-1001",
+          "CX-1001"
+        ],
+        "triage_count": 4,
+        "notes": "4 past dismissals reference this function as the reason.",
+        "feedback_adjustment": 0.0,
+        "effective_confidence": 0.87
+      }
+    },
+    {
+      "qualified_name": "Validators.escapeLdap",
+      "file": "src\\main\\java\\com\\webshop\\toolbox\\Validators.java",
+      "line": 61,
+      "role": "sanitizer",
+      "confidence": 0.87,
+      "attack_classes": [
+        "ldap_injection"
+      ],
+      "verdict": "APPROVED",
+      "verdict_reason": "code evidence + 4 supporting dismissals",
+      "evidence": {
+        "code_reasons": [
+          "escapes LDAP special characters per RFC 4515",
+          "escaped metacharacters cannot alter the search filter"
+        ],
+        "triage_support": [
+          "CX-1003",
+          "CX-1003",
+          "CX-1003",
+          "CX-1003"
+        ],
+        "triage_count": 4,
+        "notes": "4 past dismissals reference this function as the reason.",
+        "feedback_adjustment": 0.0,
+        "effective_confidence": 0.87
+      }
+    },
+    {
+      "qualified_name": "Validators.sanitizePath",
+      "file": "src\\main\\java\\com\\webshop\\toolbox\\Validators.java",
+      "line": 18,
+      "role": "sanitizer",
+      "confidence": 0.87,
+      "attack_classes": [
+        "path_traversal"
+      ],
+      "verdict": "APPROVED",
+      "verdict_reason": "code evidence + 4 supporting dismissals",
+      "evidence": {
+        "code_reasons": [
+          "rejects/strips \"..\" path-traversal sequences",
+          "restricts the result to a safe filename character set"
+        ],
+        "triage_support": [
+          "CX-1006",
+          "CX-1006",
+          "CX-1006",
+          "CX-1006"
+        ],
+        "triage_count": 4,
+        "notes": "4 past dismissals reference this function as the reason.",
+        "feedback_adjustment": 0.0,
+        "effective_confidence": 0.87
+      }
+    },
+    {
+      "qualified_name": "Validators.validateUrl",
+      "file": "src\\main\\java\\com\\webshop\\toolbox\\Validators.java",
+      "line": 45,
+      "role": "sanitizer",
+      "confidence": 0.87,
+      "attack_classes": [
+        "ssrf"
+      ],
+      "verdict": "APPROVED",
+      "verdict_reason": "code evidence + 4 supporting dismissals",
+      "evidence": {
+        "code_reasons": [
+          "checks the target host against a fixed allow-list",
+          "requests to hosts outside the allow-list are rejected"
+        ],
+        "triage_support": [
+          "CX-1007",
+          "CX-1007",
+          "CX-1007",
+          "CX-1007"
+        ],
+        "triage_count": 4,
+        "notes": "4 past dismissals reference this function as the reason.",
+        "feedback_adjustment": 0.0,
+        "effective_confidence": 0.87
+      }
+    }
+  ],
+  "needs_review": [],
+  "rejected": [
+    {
+      "qualified_name": "CommentServlet.renderComment",
+      "file": "src\\main\\java\\com\\webshop\\toolbox\\CommentServlet.java",
+      "line": 11,
+      "role": "none",
+      "confidence": 0.4,
+      "attack_classes": [],
+      "verdict": "REJECTED",
+      "verdict_reason": "role none or evidence absent",
+      "evidence": {
+        "code_reasons": [],
+        "triage_support": [],
+        "triage_count": 0,
+        "notes": "no clear taint role.",
+        "feedback_adjustment": 0.0,
+        "effective_confidence": 0.4
+      }
+    },
+    {
+      "qualified_name": "CommentServlet.renderRawComment",
+      "file": "src\\main\\java\\com\\webshop\\toolbox\\CommentServlet.java",
+      "line": 17,
+      "role": "none",
+      "confidence": 0.4,
+      "attack_classes": [],
+      "verdict": "REJECTED",
+      "verdict_reason": "role none or evidence absent",
+      "evidence": {
+        "code_reasons": [],
+        "triage_support": [],
+        "triage_count": 0,
+        "notes": "no clear taint role.",
+        "feedback_adjustment": 0.0,
+        "effective_confidence": 0.4
+      }
+    },
+    {
+      "qualified_name": "DirectorySearchServlet.searchEmployees",
+      "file": "src\\main\\java\\com\\webshop\\toolbox\\DirectorySearchServlet.java",
+      "line": 11,
+      "role": "none",
+      "confidence": 0.4,
+      "attack_classes": [],
+      "verdict": "REJECTED",
+      "verdict_reason": "role none or evidence absent",
+      "evidence": {
+        "code_reasons": [],
+        "triage_support": [],
+        "triage_count": 0,
+        "notes": "no clear taint role.",
+        "feedback_adjustment": 0.0,
+        "effective_confidence": 0.4
+      }
+    },
+    {
+      "qualified_name": "DirectorySearchServlet.searchRaw",
+      "file": "src\\main\\java\\com\\webshop\\toolbox\\DirectorySearchServlet.java",
+      "line": 17,
+      "role": "none",
+      "confidence": 0.4,
+      "attack_classes": [],
+      "verdict": "REJECTED",
+      "verdict_reason": "role none or evidence absent",
+      "evidence": {
+        "code_reasons": [],
+        "triage_support": [],
+        "triage_count": 0,
+        "notes": "no clear taint role.",
+        "feedback_adjustment": 0.0,
+        "effective_confidence": 0.4
+      }
+    },
+    {
+      "qualified_name": "FileDownloadServlet.downloadReport",
+      "file": "src\\main\\java\\com\\webshop\\toolbox\\FileDownloadServlet.java",
+      "line": 11,
+      "role": "none",
+      "confidence": 0.4,
+      "attack_classes": [],
+      "verdict": "REJECTED",
+      "verdict_reason": "role none or evidence absent",
+      "evidence": {
+        "code_reasons": [],
+        "triage_support": [],
+        "triage_count": 0,
+        "notes": "no clear taint role.",
+        "feedback_adjustment": 0.0,
+        "effective_confidence": 0.4
+      }
+    },
+    {
+      "qualified_name": "FileDownloadServlet.downloadRaw",
+      "file": "src\\main\\java\\com\\webshop\\toolbox\\FileDownloadServlet.java",
+      "line": 18,
+      "role": "none",
+      "confidence": 0.4,
+      "attack_classes": [],
+      "verdict": "REJECTED",
+      "verdict_reason": "role none or evidence absent",
+      "evidence": {
+        "code_reasons": [],
+        "triage_support": [],
+        "triage_count": 0,
+        "notes": "no clear taint role.",
+        "feedback_adjustment": 0.0,
+        "effective_confidence": 0.4
+      }
+    },
+    {
+      "qualified_name": "WebhookServlet.fetchPreview",
+      "file": "src\\main\\java\\com\\webshop\\toolbox\\WebhookServlet.java",
+      "line": 11,
+      "role": "none",
+      "confidence": 0.4,
+      "attack_classes": [],
+      "verdict": "REJECTED",
+      "verdict_reason": "role none or evidence absent",
+      "evidence": {
+        "code_reasons": [],
+        "triage_support": [],
+        "triage_count": 0,
+        "notes": "no clear taint role.",
+        "feedback_adjustment": 0.0,
+        "effective_confidence": 0.4
+      }
+    },
+    {
+      "qualified_name": "WebhookServlet.fetchRawUrl",
+      "file": "src\\main\\java\\com\\webshop\\toolbox\\WebhookServlet.java",
+      "line": 17,
+      "role": "none",
+      "confidence": 0.4,
+      "attack_classes": [],
+      "verdict": "REJECTED",
+      "verdict_reason": "role none or evidence absent",
+      "evidence": {
+        "code_reasons": [],
+        "triage_support": [],
+        "triage_count": 0,
+        "notes": "no clear taint role.",
+        "feedback_adjustment": 0.0,
+        "effective_confidence": 0.4
+      }
+    }
+  ]
+}

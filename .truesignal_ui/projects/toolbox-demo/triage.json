@@ -1,0 +1,149 @@
+{
+  "projectId": "toolbox-demo",
+  "decisions": [
+    {
+      "findingId": "CX-1001",
+      "scanId": "scan-seed",
+      "action": "DISMISS",
+      "resolution": "NOT_EXPLOITABLE",
+      "comment": "goes through Validators.encodeHtml, safe",
+      "user": "prince@checkmarx.com",
+      "date": "2026-08-16T10:05:50.991373+00:00"
+    },
+    {
+      "findingId": "CX-1001",
+      "scanId": "scan-seed",
+      "action": "DISMISS",
+      "resolution": "NOT_EXPLOITABLE",
+      "comment": "goes through Validators.encodeHtml, safe",
+      "user": "abhishek@checkmarx.com",
+      "date": "2026-08-18T10:05:50.991389+00:00"
+    },
+    {
+      "findingId": "CX-1001",
+      "scanId": "scan-seed",
+      "action": "DISMISS",
+      "resolution": "NOT_EXPLOITABLE",
+      "comment": "goes through Validators.encodeHtml, safe",
+      "user": "vishak@checkmarx.com",
+      "date": "2026-08-20T10:05:50.991393+00:00"
+    },
+    {
+      "findingId": "CX-1001",
+      "scanId": "scan-seed",
+      "action": "DISMISS",
+      "resolution": "NOT_EXPLOITABLE",
+      "comment": "goes through Validators.encodeHtml, safe",
+      "user": "apurva@checkmarx.com",
+      "date": "2026-08-22T10:05:50.991395+00:00"
+    },
+    {
+      "findingId": "CX-1003",
+      "scanId": "scan-seed",
+      "action": "DISMISS",
+      "resolution": "NOT_EXPLOITABLE",
+      "comment": "goes through Validators.escapeLdap, safe",
+      "user": "prince@checkmarx.com",
+      "date": "2026-08-16T10:05:50.991402+00:00"
+    },
+    {
+      "findingId": "CX-1003",
+      "scanId": "scan-seed",
+      "action": "DISMISS",
+      "resolution": "NOT_EXPLOITABLE",
+      "comment": "goes through Validators.escapeLdap, safe",
+      "user": "abhishek@checkmarx.com",
+      "date": "2026-08-18T10:05:50.991405+00:00"
+    },
+    {
+      "findingId": "CX-1003",
+      "scanId": "scan-seed",
+      "action": "DISMISS",
+      "resolution": "NOT_EXPLOITABLE",
+      "comment": "goes through Validators.escapeLdap, safe",
+      "user": "vishak@checkmarx.com",
+      "date": "2026-08-20T10:05:50.991407+00:00"
+    },
+    {
+      "findingId": "CX-1003",
+      "scanId": "scan-seed",
+      "action": "DISMISS",
+      "resolution": "NOT_EXPLOITABLE",
+      "comment": "goes through Validators.escapeLdap, safe",
+      "user": "apurva@checkmarx.com",
+      "date": "2026-08-22T10:05:50.991409+00:00"
+    },
+    {
+      "findingId": "CX-1006",
+      "scanId": "scan-seed",
+      "action": "DISMISS",
+      "resolution": "NOT_EXPLOITABLE",
+      "comment": "goes through Validators.sanitizePath, safe",
+      "user": "prince@checkmarx.com",
+      "date": "2026-08-16T10:05:50.991414+00:00"
+    },
+    {
+      "findingId": "CX-1006",
+      "scanId": "scan-seed",
+      "action": "DISMISS",
+      "resolution": "NOT_EXPLOITABLE",
+      "comment": "goes through Validators.sanitizePath, safe",
+      "user": "abhishek@checkmarx.com",
+      "date": "2026-08-18T10:05:50.991416+00:00"
+    },
+    {
+      "findingId": "CX-1006",
+      "scanId": "scan-seed",
+      "action": "DISMISS",
+      "resolution": "NOT_EXPLOITABLE",
+      "comment": "goes through Validators.sanitizePath, safe",
+      "user": "vishak@checkmarx.com",
+      "date": "2026-08-20T10:05:50.991419+00:00"
+    },
+    {
+      "findingId": "CX-1006",
+      "scanId": "scan-seed",
+      "action": "DISMISS",
+      "resolution": "NOT_EXPLOITABLE",
+      "comment": "goes through Validators.sanitizePath, safe",
+      "user": "apurva@checkmarx.com",
+      "date": "2026-08-22T10:05:50.991420+00:00"
+    },
+    {
+      "findingId": "CX-1007",
+      "scanId": "scan-seed",
+      "action": "DISMISS",
+      "resolution": "NOT_EXPLOITABLE",
+      "comment": "goes through Validators.validateUrl, safe",
+      "user": "prince@checkmarx.com",
+      "date": "2026-08-16T10:05:50.991425+00:00"
+    },
+    {
+      "findingId": "CX-1007",
+      "scanId": "scan-seed",
+      "action": "DISMISS",
+      "resolution": "NOT_EXPLOITABLE",
+      "comment": "goes through Validators.validateUrl, safe",
+      "user": "abhishek@checkmarx.com",
+      "date": "2026-08-18T10:05:50.991427+00:00"
+    },
+    {
+      "findingId": "CX-1007",
+      "scanId": "scan-seed",
+      "action": "DISMISS",
+      "resolution": "NOT_EXPLOITABLE",
+      "comment": "goes through Validators.validateUrl, safe",
+      "user": "vishak@checkmarx.com",
+      "date": "2026-08-20T10:05:50.991430+00:00"
+    },
+    {
+      "findingId": "CX-1007",
+      "scanId": "scan-seed",
+      "action": "DISMISS",
+      "resolution": "NOT_EXPLOITABLE",
+      "comment": "goes through Validators.validateUrl, safe",
+      "user": "apurva@checkmarx.com",
+      "date": "2026-08-22T10:05:50.991431+00:00"
+    }
+  ]
+}

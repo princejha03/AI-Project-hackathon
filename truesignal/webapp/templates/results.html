@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}Analysis results - Checkmarx TrueSignal{% endblock %}
+{% block content %}
+  <div class="page-head">
+    <h1>Applied &amp; re-scanned</h1>
+    <a class="btn" href="{{ url_for('project_overview', pid=pid) }}">&larr; Project</a>
+  </div>
+
+  {% if summary %}
+  <div class="card">
+    <h3>Summary <span class="dim small">AI-authored</span></h3>
+    <p class="small">{{ summary }}</p>
+  </div>
+  {% endif %}
+
+  <div class="card">
+    <h3>Applied this run</h3>
+    <ul class="evidence-list" style="margin-left:2px">
+      {% for v in approved %}
+        <li><code>{{ v.qualified_name }}()</code> &rarr; <span class="pill pill-info">{{ v.role }}</span> <span class="dim small">confidence {{ '%.2f'|format(v.confidence) }}</span></li>
+      {% endfor %}
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>False positives resolved <span class="pill pill-downgraded">{{ downgraded|length }} downgraded</span></h3>
+    {% if downgraded %}
+      <div class="grid-wrap">
+      <table class="grid">
+        <thead><tr><th>ID</th><th>File</th><th>Reason</th></tr></thead>
+        <tbody>
+          {% for f in downgraded %}
+            <tr><td><code>{{ f.id }}</code></td><td class="dim small">{{ f.sourceFile }}:{{ f.sourceLine }}</td>
+                <td>{{ f.downgradeReason }}</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      </div>
+    {% else %}
+      <p class="faint small">No findings were downgraded by this run.</p>
+    {% endif %}
+  </div>
+
+  <div class="card">
+    <h3>False negatives surfaced <span class="pill pill-critical">{{ new|length }} new</span></h3>
+    {% if new %}
+      {% for f in new %}
+        <div class="taint-step taint-sink">
+          <div><span class="pill pill-{{ f.severity|lower }}">{{ f.severity }}</span>
+            <code>{{ f.id }}</code> <span class="dim small">previously invisible</span></div>
+          <div class="taintpath" style="margin-top:6px">{{ f.taintPath | map(attribute='node') | join(' → ') }}</div>
+        </div>
+      {% endfor %}
+    {% else %}
+      <p class="faint small">No previously-hidden findings surfaced this run.</p>
+    {% endif %}
+  </div>
+
+  <a class="btn" href="{{ url_for('findings', pid=pid) }}">View full findings grid</a>
+{% endblock %}

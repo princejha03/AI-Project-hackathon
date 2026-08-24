@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sign in — Checkmarx TrueSignal</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/landing.css') }}">
+</head>
+<body class="lp-body">
+  <div class="auth-shell">
+    <div class="auth-card">
+      <a class="auth-brand" href="{{ url_for('landing') }}">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2 L21 6 V12 C21 17 17 20.5 12 22 C7 20.5 3 17 3 12 V6 Z" fill="#7c74e8" fill-opacity="0.22" stroke="#8f89ec" stroke-width="1.4"/>
+          <path d="M8.5 12.2 L11 14.7 L15.7 9.3" stroke="#a9a4f2" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span class="brand-checkmarx">Checkmarx</span><span class="brand-divider">|</span>TrueSignal
+      </a>
+      <h1>Sign in</h1>
+      <p class="auth-sub">Pick a demo account, or sign in manually below.</p>
+
+      {% if error %}<div class="auth-error">{{ error }}</div>{% endif %}
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          <div class="flashes">
+            {% for category, message in messages %}
+              <div class="flash flash-{{ category }}">{{ message }}</div>
+            {% endfor %}
+          </div>
+        {% endif %}
+      {% endwith %}
+
+      <div class="demo-accounts">
+        {% for a in demo_accounts %}
+          <form method="post" action="{{ url_for('login') }}">
+            <input type="hidden" name="next" value="{{ next }}">
+            <input type="hidden" name="username" value="{{ a.username }}">
+            <input type="hidden" name="password" value="{{ a.password }}">
+            <button type="submit" class="demo-account-btn">
+              <span class="demo-account-avatar">{{ a.label[0] }}</span>
+              <span class="demo-account-body">
+                <span class="demo-account-name">{{ a.label }} <code>{{ a.username }}</code></span>
+                <span class="demo-account-desc">{{ a.desc }}</span>
+              </span>
+              <span class="demo-account-go">&rarr;</span>
+            </button>
+          </form>
+        {% endfor %}
+      </div>
+
+      <div class="auth-divider"><span>or sign in manually</span></div>
+
+      <form method="post" action="{{ url_for('login') }}">
+        <input type="hidden" name="next" value="{{ next }}">
+        <label>Username
+          <input type="text" name="username" autocomplete="username" required>
+        </label>
+        <label>Password
+          <input type="password" name="password" autocomplete="current-password" required>
+        </label>
+        <button class="btn btn-primary" type="submit">Sign in</button>
+      </form>
+
+      <a class="auth-back" href="{{ url_for('landing') }}">&larr; Back to overview</a>
+    </div>
+  </div>
+</body>
+</html>

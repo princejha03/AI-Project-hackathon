@@ -1,0 +1,11 @@
+{% macro project_tabs(pid, meta, active) %}
+<div class="subnav">
+  <div class="subnav-inner">
+    <span class="crumb"><a href="{{ url_for('dashboard') }}" class="dim">Projects</a> /</span>
+    <a class="tab {{ 'active' if active == 'overview' }}" href="{{ url_for('project_overview', pid=pid) }}">Overview</a>
+    <a class="tab {{ 'active' if active == 'findings' }}" href="{{ url_for('findings', pid=pid) }}">Findings &amp; audit</a>
+    <a class="tab {{ 'active' if active == 'ledger' }}" href="{{ url_for('ledger_view', pid=pid) }}">Ledger</a>
+    <a class="tab {{ 'active' if active == 'settings' }}" href="{{ url_for('project_settings', pid=pid) }}">Settings</a>
+  </div>
+</div>
+{% endmacro %}

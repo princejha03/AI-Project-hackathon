@@ -1,0 +1,67 @@
+[
+  {
+    "project": "webshop",
+    "summary": "This run learned and applied 2 sanitizers (InputCleaner.sanitize, InputCleaner.sanitizeNumeric) and 2 sources (LegacyRequest.getParam, LegacyRequest.getHeaderValue) and 3 sinks (OrderDao.query, OrderDao.findByProduct, OrderDao.findByEmail) for sql_injection. 7 finding(s) were downgraded to NOT_EXPLOITABLE: passes through verified sanitizer InputCleaner.sanitize(); passes through verified sanitizer InputCleaner.sanitizeNumeric(). A previously-hidden CRITICAL finding (CX-2001) surfaced via LegacyRequest.getParam(\"customerRef\") -> OrderServlet.legacyLookup() -> OrderDao.query().",
+    "stats": {
+      "project": "webshop",
+      "overrides_applied": [
+        {
+          "function": "InputCleaner.sanitize",
+          "role": "sanitizer",
+          "confidence": 0.93,
+          "attack_class": "sql_injection"
+        },
+        {
+          "function": "InputCleaner.sanitizeNumeric",
+          "role": "sanitizer",
+          "confidence": 0.87,
+          "attack_class": "sql_injection"
+        },
+        {
+          "function": "LegacyRequest.getParam",
+          "role": "source",
+          "confidence": 0.97,
+          "attack_class": "sql_injection"
+        },
+        {
+          "function": "LegacyRequest.getHeaderValue",
+          "role": "source",
+          "confidence": 0.97,
+          "attack_class": "sql_injection"
+        },
+        {
+          "function": "OrderDao.query",
+          "role": "sink",
+          "confidence": 0.95,
+          "attack_class": "sql_injection"
+        },
+        {
+          "function": "OrderDao.findByProduct",
+          "role": "sink",
+          "confidence": 0.95,
+          "attack_class": "sql_injection"
+        },
+        {
+          "function": "OrderDao.findByEmail",
+          "role": "sink",
+          "confidence": 0.95,
+          "attack_class": "sql_injection"
+        }
+      ],
+      "findings_downgraded": 7,
+      "downgrade_reasons": [
+        "passes through verified sanitizer InputCleaner.sanitize()",
+        "passes through verified sanitizer InputCleaner.sanitizeNumeric()"
+      ],
+      "new_findings": [
+        {
+          "id": "CX-2001",
+          "severity": "CRITICAL",
+          "taint_path": "LegacyRequest.getParam(\"customerRef\") -> OrderServlet.legacyLookup() -> OrderDao.query()"
+        }
+      ],
+      "needs_review_count": 0
+    },
+    "timestamp": "2026-08-24T09:03:35.532168+00:00"
+  }
+]

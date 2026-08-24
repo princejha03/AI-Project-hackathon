@@ -1,0 +1,360 @@
+{
+  "project": "webshop",
+  "learned": [
+    {
+      "qualified_name": "InputCleaner.sanitize",
+      "file": "src\\main\\java\\com\\webshop\\security\\InputCleaner.java",
+      "line": 18,
+      "role": "sanitizer",
+      "confidence": 0.93,
+      "attack_classes": [
+        "sql_injection"
+      ],
+      "verdict": "APPROVED",
+      "verdict_reason": "code evidence + 35 supporting dismissals",
+      "evidence": {
+        "code_reasons": [
+          "strict allow-list: characters outside a safe set are dropped",
+          "single quotes and SQL metacharacters cannot pass through",
+          "output length capped; result trimmed"
+        ],
+        "triage_support": [
+          "CX-1001",
+          "CX-1001",
+          "CX-1001",
+          "CX-1001",
+          "CX-1001",
+          "CX-1001",
+          "CX-1002",
+          "CX-1002",
+          "CX-1002",
+          "CX-1002",
+          "CX-1002",
+          "CX-1002",
+          "CX-1003",
+          "CX-1003",
+          "CX-1003",
+          "CX-1003",
+          "CX-1003",
+          "CX-1003",
+          "CX-1004",
+          "CX-1004",
+          "CX-1004",
+          "CX-1004",
+          "CX-1004",
+          "CX-1004",
+          "CX-1006",
+          "CX-1006",
+          "CX-1006",
+          "CX-1006",
+          "CX-1006",
+          "CX-1006",
+          "CX-1007",
+          "CX-1007",
+          "CX-1007",
+          "CX-1007",
+          "CX-1007"
+        ],
+        "triage_count": 35,
+        "notes": "35 past dismissals reference this function as the reason.",
+        "feedback_adjustment": 0.0,
+        "effective_confidence": 0.93
+      }
+    },
+    {
+      "qualified_name": "InputCleaner.sanitizeNumeric",
+      "file": "src\\main\\java\\com\\webshop\\security\\InputCleaner.java",
+      "line": 35,
+      "role": "sanitizer",
+      "confidence": 0.87,
+      "attack_classes": [
+        "sql_injection"
+      ],
+      "verdict": "APPROVED",
+      "verdict_reason": "code evidence + 6 supporting dismissals",
+      "evidence": {
+        "code_reasons": [
+          "strict allow-list: characters outside a safe set are dropped",
+          "single quotes and SQL metacharacters cannot pass through",
+          "output length capped; result trimmed"
+        ],
+        "triage_support": [
+          "CX-1005",
+          "CX-1005",
+          "CX-1005",
+          "CX-1005",
+          "CX-1005",
+          "CX-1005"
+        ],
+        "triage_count": 6,
+        "notes": "6 past dismissals reference this function as the reason.",
+        "feedback_adjustment": 0.0,
+        "effective_confidence": 0.87
+      }
+    },
+    {
+      "qualified_name": "LegacyRequest.getParam",
+      "file": "src\\main\\java\\com\\webshop\\legacy\\LegacyRequest.java",
+      "line": 23,
+      "role": "source",
+      "confidence": 0.97,
+      "attack_classes": [
+        "sql_injection",
+        "xss"
+      ],
+      "verdict": "APPROVED",
+      "verdict_reason": "wraps a known source (independently confirmed by indexer)",
+      "evidence": {
+        "code_reasons": [
+          "directly returns HttpServletRequest accessor values",
+          "no validation or transformation on the returned data"
+        ],
+        "triage_support": [],
+        "triage_count": 0,
+        "notes": "wrapper class \u2014 engine sees only the wrapper, not the inner accessor.",
+        "feedback_adjustment": 0.0,
+        "effective_confidence": 0.97
+      }
+    },
+    {
+      "qualified_name": "LegacyRequest.getHeaderValue",
+      "file": "src\\main\\java\\com\\webshop\\legacy\\LegacyRequest.java",
+      "line": 29,
+      "role": "source",
+      "confidence": 0.97,
+      "attack_classes": [
+        "sql_injection",
+        "xss"
+      ],
+      "verdict": "APPROVED",
+      "verdict_reason": "wraps a known source (independently confirmed by indexer)",
+      "evidence": {
+        "code_reasons": [
+          "directly returns HttpServletRequest accessor values",
+          "no validation or transformation on the returned data"
+        ],
+        "triage_support": [],
+        "triage_count": 0,
+        "notes": "wrapper class \u2014 engine sees only the wrapper, not the inner accessor.",
+        "feedback_adjustment": 0.0,
+        "effective_confidence": 0.97
+      }
+    },
+    {
+      "qualified_name": "OrderDao.query",
+      "file": "src\\main\\java\\com\\webshop\\dao\\OrderDao.java",
+      "line": 22,
+      "role": "sink",
+      "confidence": 0.95,
+      "attack_classes": [
+        "sql_injection"
+      ],
+      "verdict": "APPROVED",
+      "verdict_reason": "touches a known sink (independently confirmed by indexer)",
+      "evidence": {
+        "code_reasons": [
+          "builds SQL via string concatenation",
+          "passes result to Statement.executeQuery"
+        ],
+        "triage_support": [],
+        "triage_count": 0,
+        "notes": "already a known sink pattern; confirms engine coverage.",
+        "feedback_adjustment": 0.0,
+        "effective_confidence": 0.95
+      }
+    },
+    {
+      "qualified_name": "OrderDao.findByProduct",
+      "file": "src\\main\\java\\com\\webshop\\dao\\OrderDao.java",
+      "line": 27,
+      "role": "sink",
+      "confidence": 0.95,
+      "attack_classes": [
+        "sql_injection"
+      ],
+      "verdict": "APPROVED",
+      "verdict_reason": "touches a known sink (independently confirmed by indexer)",
+      "evidence": {
+        "code_reasons": [
+          "builds SQL via string concatenation",
+          "passes result to Statement.executeQuery"
+        ],
+        "triage_support": [],
+        "triage_count": 0,
+        "notes": "already a known sink pattern; confirms engine coverage.",
+        "feedback_adjustment": 0.0,
+        "effective_confidence": 0.95
+      }
+    },
+    {
+      "qualified_name": "OrderDao.findByEmail",
+      "file": "src\\main\\java\\com\\webshop\\dao\\OrderDao.java",
+      "line": 33,
+      "role": "sink",
+      "confidence": 0.95,
+      "attack_classes": [
+        "sql_injection"
+      ],
+      "verdict": "APPROVED",
+      "verdict_reason": "touches a known sink (independently confirmed by indexer)",
+      "evidence": {
+        "code_reasons": [
+          "builds SQL via string concatenation",
+          "passes result to Statement.executeQuery"
+        ],
+        "triage_support": [],
+        "triage_count": 0,
+        "notes": "already a known sink pattern; confirms engine coverage.",
+        "feedback_adjustment": 0.0,
+        "effective_confidence": 0.95
+      }
+    }
+  ],
+  "needs_review": [],
+  "rejected": [
+    {
+      "qualified_name": "OrderServlet.searchByProduct",
+      "file": "src\\main\\java\\com\\webshop\\web\\OrderServlet.java",
+      "line": 27,
+      "role": "none",
+      "confidence": 0.4,
+      "attack_classes": [],
+      "verdict": "REJECTED",
+      "verdict_reason": "role none or evidence absent",
+      "evidence": {
+        "code_reasons": [],
+        "triage_support": [],
+        "triage_count": 0,
+        "notes": "no clear taint role.",
+        "feedback_adjustment": 0.0,
+        "effective_confidence": 0.4
+      }
+    },
+    {
+      "qualified_name": "OrderServlet.searchByEmail",
+      "file": "src\\main\\java\\com\\webshop\\web\\OrderServlet.java",
+      "line": 33,
+      "role": "none",
+      "confidence": 0.4,
+      "attack_classes": [],
+      "verdict": "REJECTED",
+      "verdict_reason": "role none or evidence absent",
+      "evidence": {
+        "code_reasons": [],
+        "triage_support": [],
+        "triage_count": 0,
+        "notes": "no clear taint role.",
+        "feedback_adjustment": 0.0,
+        "effective_confidence": 0.4
+      }
+    },
+    {
+      "qualified_name": "OrderServlet.searchSanitizedRef",
+      "file": "src\\main\\java\\com\\webshop\\web\\OrderServlet.java",
+      "line": 39,
+      "role": "none",
+      "confidence": 0.4,
+      "attack_classes": [],
+      "verdict": "REJECTED",
+      "verdict_reason": "role none or evidence absent",
+      "evidence": {
+        "code_reasons": [],
+        "triage_support": [],
+        "triage_count": 0,
+        "notes": "no clear taint role.",
+        "feedback_adjustment": 0.0,
+        "effective_confidence": 0.4
+      }
+    },
+    {
+      "qualified_name": "OrderServlet.rawSearch",
+      "file": "src\\main\\java\\com\\webshop\\web\\OrderServlet.java",
+      "line": 57,
+      "role": "none",
+      "confidence": 0.4,
+      "attack_classes": [],
+      "verdict": "REJECTED",
+      "verdict_reason": "role none or evidence absent",
+      "evidence": {
+        "code_reasons": [],
+        "triage_support": [],
+        "triage_count": 0,
+        "notes": "no clear taint role.",
+        "feedback_adjustment": 0.0,
+        "effective_confidence": 0.4
+      }
+    },
+    {
+      "qualified_name": "ProfileServlet.ordersForUser",
+      "file": "src\\main\\java\\com\\webshop\\web\\ProfileServlet.java",
+      "line": 14,
+      "role": "none",
+      "confidence": 0.4,
+      "attack_classes": [],
+      "verdict": "REJECTED",
+      "verdict_reason": "role none or evidence absent",
+      "evidence": {
+        "code_reasons": [],
+        "triage_support": [],
+        "triage_count": 0,
+        "notes": "no clear taint role.",
+        "feedback_adjustment": 0.0,
+        "effective_confidence": 0.4
+      }
+    },
+    {
+      "qualified_name": "ProfileServlet.ordersForAccount",
+      "file": "src\\main\\java\\com\\webshop\\web\\ProfileServlet.java",
+      "line": 20,
+      "role": "none",
+      "confidence": 0.4,
+      "attack_classes": [],
+      "verdict": "REJECTED",
+      "verdict_reason": "role none or evidence absent",
+      "evidence": {
+        "code_reasons": [],
+        "triage_support": [],
+        "triage_count": 0,
+        "notes": "no clear taint role.",
+        "feedback_adjustment": 0.0,
+        "effective_confidence": 0.4
+      }
+    },
+    {
+      "qualified_name": "ProfileServlet.searchHistory",
+      "file": "src\\main\\java\\com\\webshop\\web\\ProfileServlet.java",
+      "line": 26,
+      "role": "none",
+      "confidence": 0.4,
+      "attack_classes": [],
+      "verdict": "REJECTED",
+      "verdict_reason": "role none or evidence absent",
+      "evidence": {
+        "code_reasons": [],
+        "triage_support": [],
+        "triage_count": 0,
+        "notes": "no clear taint role.",
+        "feedback_adjustment": 0.0,
+        "effective_confidence": 0.4
+      }
+    },
+    {
+      "qualified_name": "ProfileServlet.contactLookup",
+      "file": "src\\main\\java\\com\\webshop\\web\\ProfileServlet.java",
+      "line": 32,
+      "role": "none",
+      "confidence": 0.4,
+      "attack_classes": [],
+      "verdict": "REJECTED",
+      "verdict_reason": "role none or evidence absent",
+      "evidence": {
+        "code_reasons": [],
+        "triage_support": [],
+        "triage_count": 0,
+        "notes": "no clear taint role.",
+        "feedback_adjustment": 0.0,
+        "effective_confidence": 0.4
+      }
+    }
+  ]
+}

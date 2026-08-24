@@ -1,0 +1,88 @@
+[
+  {
+    "project": "toolbox-demo",
+    "summary": "This run learned and applied 4 sanitizers (Validators.encodeHtml, Validators.escapeLdap, Validators.sanitizePath, Validators.validateUrl) for ldap_injection, path_traversal, ssrf, xss. 4 finding(s) were downgraded to NOT_EXPLOITABLE: passes through verified sanitizer Validators.encodeHtml(); passes through verified sanitizer Validators.escapeLdap(); passes through verified sanitizer Validators.sanitizePath(); passes through verified sanitizer Validators.validateUrl().",
+    "stats": {
+      "project": "toolbox-demo",
+      "overrides_applied": [
+        {
+          "function": "Validators.encodeHtml",
+          "role": "sanitizer",
+          "confidence": 0.87,
+          "attack_class": "xss"
+        },
+        {
+          "function": "Validators.escapeLdap",
+          "role": "sanitizer",
+          "confidence": 0.87,
+          "attack_class": "ldap_injection"
+        },
+        {
+          "function": "Validators.sanitizePath",
+          "role": "sanitizer",
+          "confidence": 0.87,
+          "attack_class": "path_traversal"
+        },
+        {
+          "function": "Validators.validateUrl",
+          "role": "sanitizer",
+          "confidence": 0.87,
+          "attack_class": "ssrf"
+        }
+      ],
+      "findings_downgraded": 4,
+      "downgrade_reasons": [
+        "passes through verified sanitizer Validators.encodeHtml()",
+        "passes through verified sanitizer Validators.escapeLdap()",
+        "passes through verified sanitizer Validators.sanitizePath()",
+        "passes through verified sanitizer Validators.validateUrl()"
+      ],
+      "new_findings": [],
+      "needs_review_count": 0
+    },
+    "timestamp": "2026-08-23T15:15:19.162111+00:00"
+  },
+  {
+    "project": "toolbox-demo",
+    "summary": "This run learned and applied 4 sanitizers (Validators.encodeHtml, Validators.escapeLdap, Validators.sanitizePath, Validators.validateUrl) for ldap_injection, path_traversal, ssrf, xss. 4 finding(s) were downgraded to NOT_EXPLOITABLE: passes through verified sanitizer Validators.encodeHtml(); passes through verified sanitizer Validators.escapeLdap(); passes through verified sanitizer Validators.sanitizePath(); passes through verified sanitizer Validators.validateUrl().",
+    "stats": {
+      "project": "toolbox-demo",
+      "overrides_applied": [
+        {
+          "function": "Validators.encodeHtml",
+          "role": "sanitizer",
+          "confidence": 0.87,
+          "attack_class": "xss"
+        },
+        {
+          "function": "Validators.escapeLdap",
+          "role": "sanitizer",
+          "confidence": 0.87,
+          "attack_class": "ldap_injection"
+        },
+        {
+          "function": "Validators.sanitizePath",
+          "role": "sanitizer",
+          "confidence": 0.87,
+          "attack_class": "path_traversal"
+        },
+        {
+          "function": "Validators.validateUrl",
+          "role": "sanitizer",
+          "confidence": 0.87,
+          "attack_class": "ssrf"
+        }
+      ],
+      "findings_downgraded": 4,
+      "downgrade_reasons": [
+        "passes through verified sanitizer Validators.encodeHtml()",
+        "passes through verified sanitizer Validators.escapeLdap()",
+        "passes through verified sanitizer Validators.sanitizePath()",
+        "passes through verified sanitizer Validators.validateUrl()"
+      ],
+      "new_findings": [],
+      "needs_review_count": 0
+    },
+    "timestamp": "2026-08-24T12:00:33.121627+00:00"
+  }
+]

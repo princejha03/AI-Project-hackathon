@@ -1,0 +1,435 @@
+{
+  "projectId": "webshop",
+  "decisions": [
+    {
+      "findingId": "CX-1001",
+      "scanId": "scan-past-001",
+      "action": "DISMISS",
+      "resolution": "NOT_EXPLOITABLE",
+      "comment": "FP - InputCleaner.sanitize on the taint path",
+      "user": "dana.k",
+      "sanitizerOnPath": "InputCleaner.sanitize",
+      "date": "2026-01-01"
+    },
+    {
+      "findingId": "CX-1002",
+      "scanId": "scan-past-001",
+      "action": "DISMISS",
+      "resolution": "NOT_EXPLOITABLE",
+      "comment": "FP - InputCleaner.sanitize on the taint path",
+      "user": "maria.p",
+      "sanitizerOnPath": "InputCleaner.sanitize",
+      "date": "2026-01-08"
+    },
+    {
+      "findingId": "CX-1003",
+      "scanId": "scan-past-001",
+      "action": "DISMISS",
+      "resolution": "NOT_EXPLOITABLE",
+      "comment": "sanitized by InputCleaner.sanitize before the query",
+      "user": "yossi.b",
+      "sanitizerOnPath": "InputCleaner.sanitize",
+      "date": "2026-01-24"
+    },
+    {
+      "findingId": "CX-1004",
+      "scanId": "scan-past-001",
+      "action": "DISMISS",
+      "resolution": "NOT_EXPLOITABLE",
+      "comment": "goes through InputCleaner, safe",
+      "user": "dana.k",
+      "sanitizerOnPath": "InputCleaner.sanitize",
+      "date": "2026-01-19"
+    },
+    {
+      "findingId": "CX-1005",
+      "scanId": "scan-past-001",
+      "action": "DISMISS",
+      "resolution": "NOT_EXPLOITABLE",
+      "comment": "same as previous sprints: InputCleaner path, dismissing",
+      "user": "dana.k",
+      "sanitizerOnPath": "InputCleaner.sanitizeNumeric",
+      "date": "2026-01-01"
+    },
+    {
+      "findingId": "CX-1006",
+      "scanId": "scan-past-001",
+      "action": "DISMISS",
+      "resolution": "NOT_EXPLOITABLE",
+      "comment": "goes through InputCleaner, safe",
+      "user": "yossi.b",
+      "sanitizerOnPath": "InputCleaner.sanitize",
+      "date": "2026-01-08"
+    },
+    {
+      "findingId": "CX-1007",
+      "scanId": "scan-past-001",
+      "action": "DISMISS",
+      "resolution": "NOT_EXPLOITABLE",
+      "comment": "verified safe, custom sanitizer neutralizes SQLi chars",
+      "user": "dana.k",
+      "sanitizerOnPath": "InputCleaner.sanitize",
+      "date": "2026-01-18"
+    },
+    {
+      "findingId": "CX-1001",
+      "scanId": "scan-past-002",
+      "action": "DISMISS",
+      "resolution": "NOT_EXPLOITABLE",
+      "comment": "sanitized by InputCleaner.sanitize before the query",
+      "user": "tomer.l",
+      "sanitizerOnPath": "InputCleaner.sanitize",
+      "date": "2026-02-08"
+    },
+    {
+      "findingId": "CX-1002",
+      "scanId": "scan-past-002",
+      "action": "DISMISS",
+      "resolution": "NOT_EXPLOITABLE",
+      "comment": "same as previous sprints: InputCleaner path, dismissing",
+      "user": "maria.p",
+      "sanitizerOnPath": "InputCleaner.sanitize",
+      "date": "2026-02-26"
+    },
+    {
+      "findingId": "CX-1003",
+      "scanId": "scan-past-002",
+      "action": "DISMISS",
+      "resolution": "NOT_EXPLOITABLE",
+      "comment": "goes through InputCleaner, safe",
+      "user": "yossi.b",
+      "sanitizerOnPath": "InputCleaner.sanitize",
+      "date": "2026-02-23"
+    },
+    {
+      "findingId": "CX-1004",
+      "scanId": "scan-past-002",
+      "action": "DISMISS",
+      "resolution": "NOT_EXPLOITABLE",
+      "comment": "same as previous sprints: InputCleaner path, dismissing",
+      "user": "maria.p",
+      "sanitizerOnPath": "InputCleaner.sanitize",
+      "date": "2026-02-09"
+    },
+    {
+      "findingId": "CX-1005",
+      "scanId": "scan-past-002",
+      "action": "DISMISS",
+      "resolution": "NOT_EXPLOITABLE",
+      "comment": "sanitized by InputCleaner.sanitize before the query",
+      "user": "yossi.b",
+      "sanitizerOnPath": "InputCleaner.sanitizeNumeric",
+      "date": "2026-02-25"
+    },
+    {
+      "findingId": "CX-1006",
+      "scanId": "scan-past-002",
+      "action": "DISMISS",
+      "resolution": "NOT_EXPLOITABLE",
+      "comment": "not exploitable - allow-list sanitizer strips quotes",
+      "user": "dana.k",
+      "sanitizerOnPath": "InputCleaner.sanitize",
+      "date": "2026-02-03"
+    },
+    {
+      "findingId": "CX-1007",
+      "scanId": "scan-past-002",
+      "action": "DISMISS",
+      "resolution": "NOT_EXPLOITABLE",
+      "comment": "same as previous sprints: InputCleaner path, dismissing",
+      "user": "dana.k",
+      "sanitizerOnPath": "InputCleaner.sanitize",
+      "date": "2026-02-12"
+    },
+    {
+      "findingId": "CX-1001",
+      "scanId": "scan-past-003",
+      "action": "DISMISS",
+      "resolution": "NOT_EXPLOITABLE",
+      "comment": "not exploitable - allow-list sanitizer strips quotes",
+      "user": "maria.p",
+      "sanitizerOnPath": "InputCleaner.sanitize",
+      "date": "2026-03-26"
+    },
+    {
+      "findingId": "CX-1002",
+      "scanId": "scan-past-003",
+      "action": "DISMISS",
+      "resolution": "NOT_EXPLOITABLE",
+      "comment": "goes through InputCleaner, safe",
+      "user": "tomer.l",
+      "sanitizerOnPath": "InputCleaner.sanitize",
+      "date": "2026-03-18"
+    },
+    {
+      "findingId": "CX-1003",
+      "scanId": "scan-past-003",
+      "action": "DISMISS",
+      "resolution": "NOT_EXPLOITABLE",
+      "comment": "goes through InputCleaner, safe",
+      "user": "tomer.l",
+      "sanitizerOnPath": "InputCleaner.sanitize",
+      "date": "2026-03-03"
+    },
+    {
+      "findingId": "CX-1004",
+      "scanId": "scan-past-003",
+      "action": "DISMISS",
+      "resolution": "NOT_EXPLOITABLE",
+      "comment": "verified safe, custom sanitizer neutralizes SQLi chars",
+      "user": "maria.p",
+      "sanitizerOnPath": "InputCleaner.sanitize",
+      "date": "2026-03-27"
+    },
+    {
+      "findingId": "CX-1005",
+      "scanId": "scan-past-003",
+      "action": "DISMISS",
+      "resolution": "NOT_EXPLOITABLE",
+      "comment": "FP - InputCleaner.sanitize on the taint path",
+      "user": "maria.p",
+      "sanitizerOnPath": "InputCleaner.sanitizeNumeric",
+      "date": "2026-03-19"
+    },
+    {
+      "findingId": "CX-1006",
+      "scanId": "scan-past-003",
+      "action": "DISMISS",
+      "resolution": "NOT_EXPLOITABLE",
+      "comment": "sanitized by InputCleaner.sanitize before the query",
+      "user": "dana.k",
+      "sanitizerOnPath": "InputCleaner.sanitize",
+      "date": "2026-03-02"
+    },
+    {
+      "findingId": "CX-1007",
+      "scanId": "scan-past-003",
+      "action": "DISMISS",
+      "resolution": "NOT_EXPLOITABLE",
+      "comment": "FP - InputCleaner.sanitize on the taint path",
+      "user": "yossi.b",
+      "sanitizerOnPath": "InputCleaner.sanitize",
+      "date": "2026-03-25"
+    },
+    {
+      "findingId": "CX-1001",
+      "scanId": "scan-past-004",
+      "action": "DISMISS",
+      "resolution": "NOT_EXPLOITABLE",
+      "comment": "not exploitable - allow-list sanitizer strips quotes",
+      "user": "dana.k",
+      "sanitizerOnPath": "InputCleaner.sanitize",
+      "date": "2026-04-28"
+    },
+    {
+      "findingId": "CX-1002",
+      "scanId": "scan-past-004",
+      "action": "DISMISS",
+      "resolution": "NOT_EXPLOITABLE",
+      "comment": "sanitized by InputCleaner.sanitize before the query",
+      "user": "dana.k",
+      "sanitizerOnPath": "InputCleaner.sanitize",
+      "date": "2026-04-13"
+    },
+    {
+      "findingId": "CX-1003",
+      "scanId": "scan-past-004",
+      "action": "DISMISS",
+      "resolution": "NOT_EXPLOITABLE",
+      "comment": "not exploitable - allow-list sanitizer strips quotes",
+      "user": "tomer.l",
+      "sanitizerOnPath": "InputCleaner.sanitize",
+      "date": "2026-04-21"
+    },
+    {
+      "findingId": "CX-1004",
+      "scanId": "scan-past-004",
+      "action": "DISMISS",
+      "resolution": "NOT_EXPLOITABLE",
+      "comment": "not exploitable - allow-list sanitizer strips quotes",
+      "user": "yossi.b",
+      "sanitizerOnPath": "InputCleaner.sanitize",
+      "date": "2026-04-12"
+    },
+    {
+      "findingId": "CX-1005",
+      "scanId": "scan-past-004",
+      "action": "DISMISS",
+      "resolution": "NOT_EXPLOITABLE",
+      "comment": "not exploitable - allow-list sanitizer strips quotes",
+      "user": "yossi.b",
+      "sanitizerOnPath": "InputCleaner.sanitizeNumeric",
+      "date": "2026-04-22"
+    },
+    {
+      "findingId": "CX-1006",
+      "scanId": "scan-past-004",
+      "action": "DISMISS",
+      "resolution": "NOT_EXPLOITABLE",
+      "comment": "not exploitable - allow-list sanitizer strips quotes",
+      "user": "dana.k",
+      "sanitizerOnPath": "InputCleaner.sanitize",
+      "date": "2026-04-20"
+    },
+    {
+      "findingId": "CX-1007",
+      "scanId": "scan-past-004",
+      "action": "DISMISS",
+      "resolution": "NOT_EXPLOITABLE",
+      "comment": "FP - InputCleaner.sanitize on the taint path",
+      "user": "yossi.b",
+      "sanitizerOnPath": "InputCleaner.sanitize",
+      "date": "2026-04-18"
+    },
+    {
+      "findingId": "CX-1001",
+      "scanId": "scan-past-005",
+      "action": "DISMISS",
+      "resolution": "NOT_EXPLOITABLE",
+      "comment": "FP - InputCleaner.sanitize on the taint path",
+      "user": "yossi.b",
+      "sanitizerOnPath": "InputCleaner.sanitize",
+      "date": "2026-05-06"
+    },
+    {
+      "findingId": "CX-1002",
+      "scanId": "scan-past-005",
+      "action": "DISMISS",
+      "resolution": "NOT_EXPLOITABLE",
+      "comment": "same as previous sprints: InputCleaner path, dismissing",
+      "user": "tomer.l",
+      "sanitizerOnPath": "InputCleaner.sanitize",
+      "date": "2026-05-09"
+    },
+    {
+      "findingId": "CX-1003",
+      "scanId": "scan-past-005",
+      "action": "DISMISS",
+      "resolution": "NOT_EXPLOITABLE",
+      "comment": "FP - InputCleaner.sanitize on the taint path",
+      "user": "yossi.b",
+      "sanitizerOnPath": "InputCleaner.sanitize",
+      "date": "2026-05-22"
+    },
+    {
+      "findingId": "CX-1004",
+      "scanId": "scan-past-005",
+      "action": "DISMISS",
+      "resolution": "NOT_EXPLOITABLE",
+      "comment": "not exploitable - allow-list sanitizer strips quotes",
+      "user": "dana.k",
+      "sanitizerOnPath": "InputCleaner.sanitize",
+      "date": "2026-05-08"
+    },
+    {
+      "findingId": "CX-1005",
+      "scanId": "scan-past-005",
+      "action": "DISMISS",
+      "resolution": "NOT_EXPLOITABLE",
+      "comment": "goes through InputCleaner, safe",
+      "user": "maria.p",
+      "sanitizerOnPath": "InputCleaner.sanitizeNumeric",
+      "date": "2026-05-13"
+    },
+    {
+      "findingId": "CX-1006",
+      "scanId": "scan-past-005",
+      "action": "DISMISS",
+      "resolution": "NOT_EXPLOITABLE",
+      "comment": "not exploitable - allow-list sanitizer strips quotes",
+      "user": "dana.k",
+      "sanitizerOnPath": "InputCleaner.sanitize",
+      "date": "2026-05-07"
+    },
+    {
+      "findingId": "CX-1007",
+      "scanId": "scan-past-005",
+      "action": "DISMISS",
+      "resolution": "NOT_EXPLOITABLE",
+      "comment": "verified safe, custom sanitizer neutralizes SQLi chars",
+      "user": "maria.p",
+      "sanitizerOnPath": "InputCleaner.sanitize",
+      "date": "2026-05-07"
+    },
+    {
+      "findingId": "CX-1001",
+      "scanId": "scan-past-006",
+      "action": "DISMISS",
+      "resolution": "NOT_EXPLOITABLE",
+      "comment": "FP - InputCleaner.sanitize on the taint path",
+      "user": "tomer.l",
+      "sanitizerOnPath": "InputCleaner.sanitize",
+      "date": "2026-06-13"
+    },
+    {
+      "findingId": "CX-1002",
+      "scanId": "scan-past-006",
+      "action": "DISMISS",
+      "resolution": "NOT_EXPLOITABLE",
+      "comment": "FP - InputCleaner.sanitize on the taint path",
+      "user": "tomer.l",
+      "sanitizerOnPath": "InputCleaner.sanitize",
+      "date": "2026-06-05"
+    },
+    {
+      "findingId": "CX-1003",
+      "scanId": "scan-past-006",
+      "action": "DISMISS",
+      "resolution": "NOT_EXPLOITABLE",
+      "comment": "not exploitable - allow-list sanitizer strips quotes",
+      "user": "yossi.b",
+      "sanitizerOnPath": "InputCleaner.sanitize",
+      "date": "2026-06-08"
+    },
+    {
+      "findingId": "CX-1004",
+      "scanId": "scan-past-006",
+      "action": "DISMISS",
+      "resolution": "NOT_EXPLOITABLE",
+      "comment": "FP - InputCleaner.sanitize on the taint path",
+      "user": "maria.p",
+      "sanitizerOnPath": "InputCleaner.sanitize",
+      "date": "2026-06-24"
+    },
+    {
+      "findingId": "CX-1005",
+      "scanId": "scan-past-006",
+      "action": "DISMISS",
+      "resolution": "NOT_EXPLOITABLE",
+      "comment": "verified safe, custom sanitizer neutralizes SQLi chars",
+      "user": "tomer.l",
+      "sanitizerOnPath": "InputCleaner.sanitizeNumeric",
+      "date": "2026-06-19"
+    },
+    {
+      "findingId": "CX-1006",
+      "scanId": "scan-past-006",
+      "action": "DISMISS",
+      "resolution": "NOT_EXPLOITABLE",
+      "comment": "same as previous sprints: InputCleaner path, dismissing",
+      "user": "maria.p",
+      "sanitizerOnPath": "InputCleaner.sanitize",
+      "date": "2026-06-08"
+    },
+    {
+      "findingId": "CX-1008",
+      "scanId": "scan-past-006",
+      "action": "CONFIRM",
+      "resolution": "CONFIRMED",
+      "comment": "raw parameter straight into query - real issue",
+      "user": "dana.k",
+      "sanitizerOnPath": null,
+      "date": "2026-06-15"
+    },
+    {
+      "findingId": "CX-1008",
+      "scanId": "scan-past-007",
+      "action": "CONFIRM",
+      "resolution": "CONFIRMED",
+      "comment": "raw parameter straight into query - real issue",
+      "user": "dana.k",
+      "sanitizerOnPath": null,
+      "date": "2026-07-15"
+    }
+  ]
+}

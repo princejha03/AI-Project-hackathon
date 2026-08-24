@@ -1,0 +1,14 @@
+{
+  "next": 1010,
+  "map": {
+    "OrderServlet.rawSearch": "CX-1001",
+    "OrderServlet.searchByEmail": "CX-1002",
+    "OrderServlet.searchByProduct": "CX-1003",
+    "OrderServlet.searchSanitizedRef": "CX-1004",
+    "ProfileServlet.contactLookup": "CX-1005",
+    "ProfileServlet.ordersForAccount": "CX-1006",
+    "ProfileServlet.ordersForUser": "CX-1007",
+    "ProfileServlet.searchHistory": "CX-1008",
+    "OrderServlet.legacyLookup": "CX-1009"
+  }
+}

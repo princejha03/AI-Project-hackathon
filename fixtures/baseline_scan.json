@@ -1,0 +1,232 @@
+{
+  "projectId": "webshop",
+  "scanId": "scan-baseline-001",
+  "results": [
+    {
+      "id": "CX-1001",
+      "queryName": "SQL_Injection",
+      "severity": "HIGH",
+      "state": "TO_VERIFY",
+      "sourceFile": "src/main/java/com/webshop/web/OrderServlet.java",
+      "sourceLine": 28,
+      "sinkFile": "src/main/java/com/webshop/dao/OrderDao.java",
+      "taintPath": [
+        {
+          "node": "HttpServletRequest.getParameter(\"product\")",
+          "file": "src/main/java/com/webshop/web/OrderServlet.java",
+          "line": 28,
+          "role": "source"
+        },
+        {
+          "node": "InputCleaner.sanitize()",
+          "file": "src/main/java/com/webshop/security/InputCleaner.java",
+          "line": 21,
+          "role": "passthrough"
+        },
+        {
+          "node": "OrderDao.findByProduct()",
+          "file": "src/main/java/com/webshop/dao/OrderDao.java",
+          "line": 26,
+          "role": "sink"
+        }
+      ]
+    },
+    {
+      "id": "CX-1002",
+      "queryName": "SQL_Injection",
+      "severity": "HIGH",
+      "state": "TO_VERIFY",
+      "sourceFile": "src/main/java/com/webshop/web/OrderServlet.java",
+      "sourceLine": 34,
+      "sinkFile": "src/main/java/com/webshop/dao/OrderDao.java",
+      "taintPath": [
+        {
+          "node": "HttpServletRequest.getParameter(\"email\")",
+          "file": "src/main/java/com/webshop/web/OrderServlet.java",
+          "line": 34,
+          "role": "source"
+        },
+        {
+          "node": "InputCleaner.sanitize()",
+          "file": "src/main/java/com/webshop/security/InputCleaner.java",
+          "line": 21,
+          "role": "passthrough"
+        },
+        {
+          "node": "OrderDao.findByEmail()",
+          "file": "src/main/java/com/webshop/dao/OrderDao.java",
+          "line": 26,
+          "role": "sink"
+        }
+      ]
+    },
+    {
+      "id": "CX-1003",
+      "queryName": "SQL_Injection",
+      "severity": "HIGH",
+      "state": "TO_VERIFY",
+      "sourceFile": "src/main/java/com/webshop/web/OrderServlet.java",
+      "sourceLine": 40,
+      "sinkFile": "src/main/java/com/webshop/dao/OrderDao.java",
+      "taintPath": [
+        {
+          "node": "HttpServletRequest.getParameter(\"ref\")",
+          "file": "src/main/java/com/webshop/web/OrderServlet.java",
+          "line": 40,
+          "role": "source"
+        },
+        {
+          "node": "InputCleaner.sanitize()",
+          "file": "src/main/java/com/webshop/security/InputCleaner.java",
+          "line": 21,
+          "role": "passthrough"
+        },
+        {
+          "node": "OrderDao.query()",
+          "file": "src/main/java/com/webshop/dao/OrderDao.java",
+          "line": 26,
+          "role": "sink"
+        }
+      ]
+    },
+    {
+      "id": "CX-1004",
+      "queryName": "SQL_Injection",
+      "severity": "HIGH",
+      "state": "TO_VERIFY",
+      "sourceFile": "src/main/java/com/webshop/web/ProfileServlet.java",
+      "sourceLine": 17,
+      "sinkFile": "src/main/java/com/webshop/dao/OrderDao.java",
+      "taintPath": [
+        {
+          "node": "HttpServletRequest.getParameter(\"user\")",
+          "file": "src/main/java/com/webshop/web/ProfileServlet.java",
+          "line": 17,
+          "role": "source"
+        },
+        {
+          "node": "InputCleaner.sanitize()",
+          "file": "src/main/java/com/webshop/security/InputCleaner.java",
+          "line": 21,
+          "role": "passthrough"
+        },
+        {
+          "node": "OrderDao.query()",
+          "file": "src/main/java/com/webshop/dao/OrderDao.java",
+          "line": 26,
+          "role": "sink"
+        }
+      ]
+    },
+    {
+      "id": "CX-1005",
+      "queryName": "SQL_Injection",
+      "severity": "HIGH",
+      "state": "TO_VERIFY",
+      "sourceFile": "src/main/java/com/webshop/web/ProfileServlet.java",
+      "sourceLine": 23,
+      "sinkFile": "src/main/java/com/webshop/dao/OrderDao.java",
+      "taintPath": [
+        {
+          "node": "HttpServletRequest.getParameter(\"account\")",
+          "file": "src/main/java/com/webshop/web/ProfileServlet.java",
+          "line": 23,
+          "role": "source"
+        },
+        {
+          "node": "InputCleaner.sanitizeNumeric()",
+          "file": "src/main/java/com/webshop/security/InputCleaner.java",
+          "line": 38,
+          "role": "passthrough"
+        },
+        {
+          "node": "OrderDao.query()",
+          "file": "src/main/java/com/webshop/dao/OrderDao.java",
+          "line": 26,
+          "role": "sink"
+        }
+      ]
+    },
+    {
+      "id": "CX-1006",
+      "queryName": "SQL_Injection",
+      "severity": "HIGH",
+      "state": "TO_VERIFY",
+      "sourceFile": "src/main/java/com/webshop/web/ProfileServlet.java",
+      "sourceLine": 29,
+      "sinkFile": "src/main/java/com/webshop/dao/OrderDao.java",
+      "taintPath": [
+        {
+          "node": "HttpServletRequest.getParameter(\"q\")",
+          "file": "src/main/java/com/webshop/web/ProfileServlet.java",
+          "line": 29,
+          "role": "source"
+        },
+        {
+          "node": "InputCleaner.sanitize()",
+          "file": "src/main/java/com/webshop/security/InputCleaner.java",
+          "line": 21,
+          "role": "passthrough"
+        },
+        {
+          "node": "OrderDao.findByProduct()",
+          "file": "src/main/java/com/webshop/dao/OrderDao.java",
+          "line": 26,
+          "role": "sink"
+        }
+      ]
+    },
+    {
+      "id": "CX-1007",
+      "queryName": "SQL_Injection",
+      "severity": "HIGH",
+      "state": "TO_VERIFY",
+      "sourceFile": "src/main/java/com/webshop/web/ProfileServlet.java",
+      "sourceLine": 35,
+      "sinkFile": "src/main/java/com/webshop/dao/OrderDao.java",
+      "taintPath": [
+        {
+          "node": "HttpServletRequest.getParameter(\"mail\")",
+          "file": "src/main/java/com/webshop/web/ProfileServlet.java",
+          "line": 35,
+          "role": "source"
+        },
+        {
+          "node": "InputCleaner.sanitize()",
+          "file": "src/main/java/com/webshop/security/InputCleaner.java",
+          "line": 21,
+          "role": "passthrough"
+        },
+        {
+          "node": "OrderDao.findByEmail()",
+          "file": "src/main/java/com/webshop/dao/OrderDao.java",
+          "line": 26,
+          "role": "sink"
+        }
+      ]
+    },
+    {
+      "id": "CX-1008",
+      "queryName": "SQL_Injection",
+      "severity": "HIGH",
+      "state": "TO_VERIFY",
+      "sourceFile": "src/main/java/com/webshop/web/OrderServlet.java",
+      "sourceLine": 62,
+      "sinkFile": "src/main/java/com/webshop/dao/OrderDao.java",
+      "taintPath": [
+        {
+          "node": "HttpServletRequest.getParameter(\"ref\")",
+          "file": "src/main/java/com/webshop/web/OrderServlet.java",
+          "line": 62,
+          "role": "source"
+        },
+        {
+          "node": "OrderDao.query()",
+          "file": "src/main/java/com/webshop/dao/OrderDao.java",
+          "line": 26,
+          "role": "sink"
+        }
+      ]
+    }
+  ]
+}

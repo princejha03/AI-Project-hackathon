@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+{% from "_tabs.html" import project_tabs %}
+{% block title %}{{ meta.name }} - Checkmarx TrueSignal{% endblock %}
+{% block subnav %}{{ project_tabs(pid, meta, 'overview') }}{% endblock %}
+{% block content %}
+  <div class="page-head">
+    <div>
+      <h1>{{ meta.name }} {% if meta.seeded %}<span class="pill pill-info">demo</span>{% endif %}</h1>
+      <p class="subtitle">Imported {{ meta.created[:19] }}</p>
+    </div>
+    <div class="actions">
+      <a class="btn" href="{{ url_for('findings', pid=pid) }}">Findings &amp; audit</a>
+      {% if current_user_label == 'Admin' %}
+      <a class="btn btn-primary" href="{{ url_for('analyze', pid=pid) }}">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M13 3 4 14h6l-1 7 9-11h-6l1-7Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" fill="currentColor" fill-opacity="0.18"/></svg>
+        Run TrueSignal analysis
+      </a>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="stat-row">
+    <div class="stat"><div class="stat-value">{{ stats.total }}</div><div class="stat-label">Findings</div></div>
+    <div class="stat"><div class="stat-value">{{ stats.audited }}</div><div class="stat-label">Audited</div></div>
+    <div class="stat"><div class="stat-value">{{ stats.overrides_applied }}</div><div class="stat-label">Overrides applied</div></div>
+    <div class="stat stat-good"><div class="stat-value">{{ stats.downgraded }}</div><div class="stat-label">False positives resolved</div></div>
+    <div class="stat stat-alert"><div class="stat-value">{{ stats.surfaced }}</div><div class="stat-label">Hidden findings surfaced</div></div>
+  </div>
+
+  <div class="chart-row">
+    <div class="card chart-card">
+      <h3>Noise eliminated</h3>
+      <div class="gauge-row" id="chart-noise"></div>
+      <script type="application/json" data-chart-for="chart-noise" data-chart-type="gauge">{{ {"pct": stats.noise_pct, "opts": {"label": "of backlog"}}|tojson }}</script>
+      <p class="dim small" style="margin:8px 0 0">{{ stats.downgraded }} of {{ stats.total }} findings eliminated.</p>
+    </div>
+    <div class="card chart-card">
+      <h3>Findings by state</h3>
+      <div id="chart-state"></div>
+      <script type="application/json" data-chart-for="chart-state" data-chart-type="donut">{{ {"segments": state_chart}|tojson }}</script>
+    </div>
+    <div class="card chart-card">
+      <h3>Audit decisions</h3>
+      {% if resolution_chart %}
+        <div id="chart-resolution"></div>
+        <script type="application/json" data-chart-for="chart-resolution" data-chart-type="donut">{{ {"segments": resolution_chart}|tojson }}</script>
+      {% else %}
+        <p class="faint small">No findings audited yet.</p>
+      {% endif %}
+    </div>
+    <div class="card chart-card">
+      <h3>Overrides by kind</h3>
+      {% if kind_chart %}
+        <div id="chart-kind"></div>
+        <script type="application/json" data-chart-for="chart-kind" data-chart-type="donut">{{ {"segments": kind_chart}|tojson }}</script>
+      {% else %}
+        <p class="faint small">Nothing applied yet &mdash; run an analysis to learn overrides.</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Cross-project patterns <span class="dim small">advisory only &mdash; nothing is ever applied from here</span></h3>
+    {% if pattern_matches %}
+      <p class="dim small" style="margin-top:0">
+        These functions haven't been classified in {{ meta.name }} yet, but their code shape closely
+        matches something already proven and applied in another project.
+      </p>
+      <div class="grid-wrap">
+      <table class="grid">
+        <thead><tr><th>Unclassified here</th><th>Looks like</th><th>Match</th><th></th></tr></thead>
+        <tbody>
+          {% for m in pattern_matches %}
+            <tr>
+              <td>
+                <code>{{ m.candidate }}()</code>
+                <div class="faint small">{{ m.candidate_file }}:{{ m.candidate_line }}</div>
+              </td>
+              <td>
+                <span class="pill pill-info">{{ m.pattern.kind }}</span>
+                <code>{{ m.pattern.qualified_name }}()</code>
+                <div class="faint small">{{ m.pattern.project_name }} &middot; {{ m.pattern.attack_class }}</div>
+              </td>
+              <td>{{ m.similarity_pct }}% similar</td>
+              <td>
+                {% if current_user_label == 'Admin' %}
+                <a class="btn" href="{{ url_for('training', project_id=pid, qualified_name=m.candidate, role=m.pattern.kind, attack_class=m.pattern.attack_class) }}">
+                  Suggest as {{ m.pattern.kind }} &rarr;
+                </a>
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      </div>
+    {% else %}
+      <p class="faint small">
+        No unclassified functions here currently resemble a pattern proven elsewhere. This fills in
+        automatically as more projects apply overrides.
+      </p>
+    {% endif %}
+  </div>
+
+  <div class="card">
+    <h3>Workflow</h3>
+    <ol class="workflow-steps">
+      <li><a href="{{ url_for('findings', pid=pid) }}">Review the findings grid</a> and mark each one Not Exploitable, Confirmed, or leave it To Verify — like a normal Checkmarx audit pass. Select several at once with the bulk-audit bar.</li>
+      <li>Once a handful of findings that share a passthrough function are dismissed, <a href="{{ url_for('analyze', pid=pid) }}">run the analysis</a>. TrueSignal proposes sanitizer/source/sink learnings backed by your audits and the code itself.</li>
+      <li>Approve what you agree with. TrueSignal applies the override and re-scans — you'll see exactly which findings got downgraded (false positives resolved) and whether anything new surfaced (a false negative made visible).</li>
+      <li>Everything applied is recorded in the <a href="{{ url_for('ledger_view', pid=pid) }}">ledger</a> for audit and rollback — a wrong learning is never permanent.</li>
+    </ol>
+  </div>
+
+  {% if not meta.seeded and current_user_label == 'Admin' %}
+  <div class="card">
+    <h3 class="dim">Danger zone</h3>
+    <form method="post" action="{{ url_for('delete_project', pid=pid) }}"
+          onsubmit="return confirm('Delete this project and all its audit history?');">
+      <button class="btn btn-danger" type="submit">Delete project</button>
+    </form>
+  </div>
+  {% endif %}
+{% endblock %}

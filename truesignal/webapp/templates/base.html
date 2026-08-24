@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Checkmarx TrueSignal{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <script>
+    (function () {
+      var saved = localStorage.getItem('truesignal-theme');
+      if (saved) document.documentElement.setAttribute('data-theme', saved);
+    })();
+  </script>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="{{ url_for('dashboard') }}">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 2 L21 6 V12 C21 17 17 20.5 12 22 C7 20.5 3 17 3 12 V6 Z" fill="#7c74e8" fill-opacity="0.22" stroke="#8f89ec" stroke-width="1.4"/>
+        <path d="M8.5 12.2 L11 14.7 L15.7 9.3" stroke="#a9a4f2" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span class="brand-checkmarx">Checkmarx</span><span class="brand-divider">|</span>TrueSignal
+    </a>
+    <nav class="topnav">
+      <a class="topnav-link {{ 'active' if request.path == url_for('dashboard') }}" href="{{ url_for('dashboard') }}">Projects</a>
+      {% if current_user_label == 'Admin' %}
+      <a class="topnav-link {{ 'active' if request.path == url_for('activity') }}" href="{{ url_for('activity') }}">Activity</a>
+      <a class="topnav-link {{ 'active' if request.path == url_for('training') }}" href="{{ url_for('training') }}">Training data</a>
+      {% endif %}
+    </nav>
+    <span class="spacer"></span>
+    <button class="search-trigger" id="search-trigger" type="button" aria-label="Search">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.8"/><path d="M20 20l-3.2-3.2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      <span>Search</span>
+      <span class="search-kbd">Ctrl K</span>
+    </button>
+    <span class="env-tag">{% block env_tag %}mock mode{% endblock %}</span>
+    <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Toggle dark mode">
+      <svg id="theme-icon-dark" width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>
+      <svg id="theme-icon-light" width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:none"><circle cx="12" cy="12" r="4.2" stroke="currentColor" stroke-width="1.7"/><path d="M12 2.5v2.4M12 19.1v2.4M4.4 4.4l1.7 1.7M17.9 17.9l1.7 1.7M2.5 12h2.4M19.1 12h2.4M4.4 19.6l1.7-1.7M17.9 6.1l1.7-1.7" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+      <span id="theme-toggle-label">Dark</span>
+    </button>
+    {% if current_user %}<span class="env-tag" title="Signed in as {{ current_user }}">{{ current_user_label }}</span>{% endif %}
+    <form method="post" action="{{ url_for('logout') }}">
+      <button class="theme-toggle" type="submit" aria-label="Sign out">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span>Sign out</span>
+      </button>
+    </form>
+  </header>
+  {% block subnav %}{% endblock %}
+  <main class="shell {% block shell_class %}{% endblock %}">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="flashes">
+          {% for category, message in messages %}
+            <div class="flash flash-{{ category }}">{{ message }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+  </main>
+  <footer class="site-footer">
+    <div class="site-footer-primary">
+      <div class="site-footer-brand">
+        <div class="site-footer-mark">
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2 L21 6 V12 C21 17 17 20.5 12 22 C7 20.5 3 17 3 12 V6 Z" fill="var(--accent)" fill-opacity="0.24" stroke="var(--accent)" stroke-width="1.4"/>
+            <path d="M8.5 12.2 L11 14.7 L15.7 9.3" stroke="var(--accent)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div>
+          <p class="site-footer-title">Checkmarx</p>
+          <p class="site-footer-copy">Checkmarx One is an application security software platform built to help enterprises secure every stage of the SDLC while reducing engineering costs and accelerating development.</p>
+        </div>
+      </div>
+    </div>
+    <div class="site-footer-meta">
+      <span>©2026 Checkmarx Ltd. All Rights Reserved. ISO/IEC 27001:2013 Certified</span>
+      <div class="site-footer-links">
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Use</a>
+        <a class="site-footer-icon" href="#" aria-label="X">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18"/><path d="M6 6l12 12"/></svg>
+        </a>
+        <a class="site-footer-icon" href="#" aria-label="YouTube">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 7.2a2.1 2.1 0 0 0-1.5-1.5C18.2 5 12 5 12 5s-6.2 0-8.5.7A2.1 2.1 0 0 0 2 7.2 21.3 21.3 0 0 0 2 12a21.3 21.3 0 0 0 .5 4.8 2.1 2.1 0 0 0 1.5 1.5C5.8 19 12 19 12 19s6.2 0 8.5-.7a2.1 2.1 0 0 0 1.5-1.5A21.3 21.3 0 0 0 22 12a21.3 21.3 0 0 0-.5-4.8Z"/><path d="M10 9.5l5 2.5-5 2.5z" fill="currentColor"/></svg>
+        </a>
+        <a class="site-footer-icon" href="#" aria-label="LinkedIn">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v6h-4v-6a2 2 0 0 0-4 0v6h-4v-12h4v2"/><rect x="2" y="9" width="4" height="12" rx="1"/><circle cx="4" cy="4" r="2"/></svg>
+        </a>
+        <a class="site-footer-icon" href="#" aria-label="Facebook">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3.5a4.5 4.5 0 0 0-4.5 4.5V10H7v4h3v8h4v-8h3.1l.9-4H14V7a1 1 0 0 1 1-1h3z"/></svg>
+        </a>
+      </div>
+    </div>
+  </footer>
+  <script>
+    (function () {
+      var btn = document.getElementById('theme-toggle');
+      var label = document.getElementById('theme-toggle-label');
+      var iconDark = document.getElementById('theme-icon-dark');
+      var iconLight = document.getElementById('theme-icon-light');
+      function sync() {
+        var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+        label.textContent = isDark ? 'Light' : 'Dark';
+        iconDark.style.display = isDark ? 'none' : '';
+        iconLight.style.display = isDark ? '' : 'none';
+      }
+      btn.addEventListener('click', function () {
+        var next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        localStorage.setItem('truesignal-theme', next);
+        sync();
+        window.dispatchEvent(new CustomEvent('truesignal:theme', { detail: next }));
+      });
+      sync();
+    })();
+  </script>
+  <script src="{{ url_for('static', filename='js/charts.js') }}" defer></script>
+  <script src="{{ url_for('static', filename='js/palette.js') }}" defer></script>
+  <script src="{{ url_for('static', filename='js/interactions.js') }}" defer></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

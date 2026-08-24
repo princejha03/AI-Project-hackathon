@@ -1,0 +1,74 @@
+{
+  "projectId": "cmdi-demo",
+  "scanId": "scan-baseline",
+  "results": [
+    {
+      "id": "CX-1002",
+      "queryName": "Command_Injection",
+      "attackClass": "command_injection",
+      "severity": "HIGH",
+      "state": "TO_VERIFY",
+      "sourceFile": "src\\main\\java\\com\\webshop\\cmd\\ReportServlet.java",
+      "sourceLine": 13,
+      "sinkFile": "src\\main\\java\\com\\webshop\\cmd\\ReportServlet.java",
+      "sinkLine": 13,
+      "taintPath": [
+        {
+          "node": "getParameter()",
+          "file": "src\\main\\java\\com\\webshop\\cmd\\ReportServlet.java",
+          "line": 13,
+          "role": "source"
+        },
+        {
+          "node": "FormatValidator.clean()",
+          "file": "src\\main\\java\\com\\webshop\\cmd\\ReportServlet.java",
+          "line": 13,
+          "role": "passthrough"
+        },
+        {
+          "node": "Runtime.getRuntime()",
+          "file": "src\\main\\java\\com\\webshop\\cmd\\ReportServlet.java",
+          "line": 13,
+          "role": "passthrough"
+        },
+        {
+          "node": "exec()",
+          "file": "src\\main\\java\\com\\webshop\\cmd\\ReportServlet.java",
+          "line": 13,
+          "role": "sink"
+        }
+      ]
+    },
+    {
+      "id": "CX-1001",
+      "queryName": "Command_Injection",
+      "attackClass": "command_injection",
+      "severity": "HIGH",
+      "state": "TO_VERIFY",
+      "sourceFile": "src\\main\\java\\com\\webshop\\cmd\\ReportServlet.java",
+      "sourceLine": 19,
+      "sinkFile": "src\\main\\java\\com\\webshop\\cmd\\ReportServlet.java",
+      "sinkLine": 19,
+      "taintPath": [
+        {
+          "node": "getParameter()",
+          "file": "src\\main\\java\\com\\webshop\\cmd\\ReportServlet.java",
+          "line": 19,
+          "role": "source"
+        },
+        {
+          "node": "Runtime.getRuntime()",
+          "file": "src\\main\\java\\com\\webshop\\cmd\\ReportServlet.java",
+          "line": 19,
+          "role": "passthrough"
+        },
+        {
+          "node": "exec()",
+          "file": "src\\main\\java\\com\\webshop\\cmd\\ReportServlet.java",
+          "line": 19,
+          "role": "sink"
+        }
+      ]
+    }
+  ]
+}

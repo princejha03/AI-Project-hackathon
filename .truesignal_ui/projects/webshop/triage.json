@@ -1,0 +1,257 @@
+{
+  "projectId": "webshop",
+  "decisions": [
+    {
+      "findingId": "CX-1003",
+      "scanId": "scan-seed",
+      "action": "DISMISS",
+      "resolution": "NOT_EXPLOITABLE",
+      "comment": "goes through InputCleaner.sanitize, safe",
+      "user": "prince@checkmarx.com",
+      "date": "2026-08-16T10:05:50.975640+00:00"
+    },
+    {
+      "findingId": "CX-1003",
+      "scanId": "scan-seed",
+      "action": "DISMISS",
+      "resolution": "NOT_EXPLOITABLE",
+      "comment": "goes through InputCleaner.sanitize, safe",
+      "user": "abhishek@checkmarx.com",
+      "date": "2026-08-18T10:05:50.975671+00:00"
+    },
+    {
+      "findingId": "CX-1003",
+      "scanId": "scan-seed",
+      "action": "DISMISS",
+      "resolution": "NOT_EXPLOITABLE",
+      "comment": "goes through InputCleaner.sanitize, safe",
+      "user": "vishak@checkmarx.com",
+      "date": "2026-08-20T10:05:50.975676+00:00"
+    },
+    {
+      "findingId": "CX-1003",
+      "scanId": "scan-seed",
+      "action": "DISMISS",
+      "resolution": "NOT_EXPLOITABLE",
+      "comment": "goes through InputCleaner.sanitize, safe",
+      "user": "apurva@checkmarx.com",
+      "date": "2026-08-22T10:05:50.975679+00:00"
+    },
+    {
+      "findingId": "CX-1002",
+      "scanId": "scan-seed",
+      "action": "DISMISS",
+      "resolution": "NOT_EXPLOITABLE",
+      "comment": "goes through InputCleaner.sanitize, safe",
+      "user": "prince@checkmarx.com",
+      "date": "2026-08-16T10:05:50.975686+00:00"
+    },
+    {
+      "findingId": "CX-1002",
+      "scanId": "scan-seed",
+      "action": "DISMISS",
+      "resolution": "NOT_EXPLOITABLE",
+      "comment": "goes through InputCleaner.sanitize, safe",
+      "user": "abhishek@checkmarx.com",
+      "date": "2026-08-18T10:05:50.975689+00:00"
+    },
+    {
+      "findingId": "CX-1002",
+      "scanId": "scan-seed",
+      "action": "DISMISS",
+      "resolution": "NOT_EXPLOITABLE",
+      "comment": "goes through InputCleaner.sanitize, safe",
+      "user": "vishak@checkmarx.com",
+      "date": "2026-08-20T10:05:50.975691+00:00"
+    },
+    {
+      "findingId": "CX-1002",
+      "scanId": "scan-seed",
+      "action": "DISMISS",
+      "resolution": "NOT_EXPLOITABLE",
+      "comment": "goes through InputCleaner.sanitize, safe",
+      "user": "apurva@checkmarx.com",
+      "date": "2026-08-22T10:05:50.975693+00:00"
+    },
+    {
+      "findingId": "CX-1004",
+      "scanId": "scan-seed",
+      "action": "DISMISS",
+      "resolution": "NOT_EXPLOITABLE",
+      "comment": "goes through InputCleaner.sanitize, safe",
+      "user": "prince@checkmarx.com",
+      "date": "2026-08-16T10:05:50.975698+00:00"
+    },
+    {
+      "findingId": "CX-1004",
+      "scanId": "scan-seed",
+      "action": "DISMISS",
+      "resolution": "NOT_EXPLOITABLE",
+      "comment": "goes through InputCleaner.sanitize, safe",
+      "user": "abhishek@checkmarx.com",
+      "date": "2026-08-18T10:05:50.975700+00:00"
+    },
+    {
+      "findingId": "CX-1004",
+      "scanId": "scan-seed",
+      "action": "DISMISS",
+      "resolution": "NOT_EXPLOITABLE",
+      "comment": "goes through InputCleaner.sanitize, safe",
+      "user": "vishak@checkmarx.com",
+      "date": "2026-08-20T10:05:50.975702+00:00"
+    },
+    {
+      "findingId": "CX-1004",
+      "scanId": "scan-seed",
+      "action": "DISMISS",
+      "resolution": "NOT_EXPLOITABLE",
+      "comment": "goes through InputCleaner.sanitize, safe",
+      "user": "apurva@checkmarx.com",
+      "date": "2026-08-22T10:05:50.975708+00:00"
+    },
+    {
+      "findingId": "CX-1007",
+      "scanId": "scan-seed",
+      "action": "DISMISS",
+      "resolution": "NOT_EXPLOITABLE",
+      "comment": "goes through InputCleaner.sanitize, safe",
+      "user": "prince@checkmarx.com",
+      "date": "2026-08-16T10:05:50.975713+00:00"
+    },
+    {
+      "findingId": "CX-1007",
+      "scanId": "scan-seed",
+      "action": "DISMISS",
+      "resolution": "NOT_EXPLOITABLE",
+      "comment": "goes through InputCleaner.sanitize, safe",
+      "user": "abhishek@checkmarx.com",
+      "date": "2026-08-18T10:05:50.975719+00:00"
+    },
+    {
+      "findingId": "CX-1007",
+      "scanId": "scan-seed",
+      "action": "DISMISS",
+      "resolution": "NOT_EXPLOITABLE",
+      "comment": "goes through InputCleaner.sanitize, safe",
+      "user": "vishak@checkmarx.com",
+      "date": "2026-08-20T10:05:50.975721+00:00"
+    },
+    {
+      "findingId": "CX-1007",
+      "scanId": "scan-seed",
+      "action": "DISMISS",
+      "resolution": "NOT_EXPLOITABLE",
+      "comment": "goes through InputCleaner.sanitize, safe",
+      "user": "apurva@checkmarx.com",
+      "date": "2026-08-22T10:05:50.975725+00:00"
+    },
+    {
+      "findingId": "CX-1006",
+      "scanId": "scan-seed",
+      "action": "DISMISS",
+      "resolution": "NOT_EXPLOITABLE",
+      "comment": "goes through InputCleaner.sanitizeNumeric, safe",
+      "user": "prince@checkmarx.com",
+      "date": "2026-08-16T10:05:50.975730+00:00"
+    },
+    {
+      "findingId": "CX-1006",
+      "scanId": "scan-seed",
+      "action": "DISMISS",
+      "resolution": "NOT_EXPLOITABLE",
+      "comment": "goes through InputCleaner.sanitizeNumeric, safe",
+      "user": "abhishek@checkmarx.com",
+      "date": "2026-08-18T10:05:50.975732+00:00"
+    },
+    {
+      "findingId": "CX-1006",
+      "scanId": "scan-seed",
+      "action": "DISMISS",
+      "resolution": "NOT_EXPLOITABLE",
+      "comment": "goes through InputCleaner.sanitizeNumeric, safe",
+      "user": "vishak@checkmarx.com",
+      "date": "2026-08-20T10:05:50.975734+00:00"
+    },
+    {
+      "findingId": "CX-1006",
+      "scanId": "scan-seed",
+      "action": "DISMISS",
+      "resolution": "NOT_EXPLOITABLE",
+      "comment": "goes through InputCleaner.sanitizeNumeric, safe",
+      "user": "apurva@checkmarx.com",
+      "date": "2026-08-22T10:05:50.975736+00:00"
+    },
+    {
+      "findingId": "CX-1008",
+      "scanId": "scan-seed",
+      "action": "DISMISS",
+      "resolution": "NOT_EXPLOITABLE",
+      "comment": "goes through InputCleaner.sanitize, safe",
+      "user": "prince@checkmarx.com",
+      "date": "2026-08-16T10:05:50.975739+00:00"
+    },
+    {
+      "findingId": "CX-1008",
+      "scanId": "scan-seed",
+      "action": "DISMISS",
+      "resolution": "NOT_EXPLOITABLE",
+      "comment": "goes through InputCleaner.sanitize, safe",
+      "user": "abhishek@checkmarx.com",
+      "date": "2026-08-18T10:05:50.975741+00:00"
+    },
+    {
+      "findingId": "CX-1008",
+      "scanId": "scan-seed",
+      "action": "DISMISS",
+      "resolution": "NOT_EXPLOITABLE",
+      "comment": "goes through InputCleaner.sanitize, safe",
+      "user": "vishak@checkmarx.com",
+      "date": "2026-08-20T10:05:50.975743+00:00"
+    },
+    {
+      "findingId": "CX-1008",
+      "scanId": "scan-seed",
+      "action": "DISMISS",
+      "resolution": "NOT_EXPLOITABLE",
+      "comment": "goes through InputCleaner.sanitize, safe",
+      "user": "apurva@checkmarx.com",
+      "date": "2026-08-22T10:05:50.975746+00:00"
+    },
+    {
+      "findingId": "CX-1005",
+      "scanId": "scan-seed",
+      "action": "DISMISS",
+      "resolution": "NOT_EXPLOITABLE",
+      "comment": "goes through InputCleaner.sanitize, safe",
+      "user": "prince@checkmarx.com",
+      "date": "2026-08-16T10:05:50.975749+00:00"
+    },
+    {
+      "findingId": "CX-1005",
+      "scanId": "scan-seed",
+      "action": "DISMISS",
+      "resolution": "NOT_EXPLOITABLE",
+      "comment": "goes through InputCleaner.sanitize, safe",
+      "user": "abhishek@checkmarx.com",
+      "date": "2026-08-18T10:05:50.975751+00:00"
+    },
+    {
+      "findingId": "CX-1005",
+      "scanId": "scan-seed",
+      "action": "DISMISS",
+      "resolution": "NOT_EXPLOITABLE",
+      "comment": "goes through InputCleaner.sanitize, safe",
+      "user": "vishak@checkmarx.com",
+      "date": "2026-08-20T10:05:50.975753+00:00"
+    },
+    {
+      "findingId": "CX-1005",
+      "scanId": "scan-seed",
+      "action": "DISMISS",
+      "resolution": "NOT_EXPLOITABLE",
+      "comment": "goes through InputCleaner.sanitize, safe",
+      "user": "apurva@checkmarx.com",
+      "date": "2026-08-22T10:05:50.975755+00:00"
+    }
+  ]
+}

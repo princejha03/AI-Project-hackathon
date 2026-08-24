@@ -1,0 +1,230 @@
+{
+  "projectId": "toolbox-demo",
+  "scanId": "scan-baseline",
+  "results": [
+    {
+      "id": "CX-1001",
+      "queryName": "XSS_Reflected",
+      "attackClass": "xss",
+      "severity": "HIGH",
+      "state": "TO_VERIFY",
+      "sourceFile": "src\\main\\java\\com\\webshop\\toolbox\\CommentServlet.java",
+      "sourceLine": 11,
+      "sinkFile": "src\\main\\java\\com\\webshop\\toolbox\\CommentServlet.java",
+      "sinkLine": 11,
+      "taintPath": [
+        {
+          "node": "getParameter()",
+          "file": "src\\main\\java\\com\\webshop\\toolbox\\CommentServlet.java",
+          "line": 11,
+          "role": "source"
+        },
+        {
+          "node": "Validators.encodeHtml()",
+          "file": "src\\main\\java\\com\\webshop\\toolbox\\CommentServlet.java",
+          "line": 11,
+          "role": "passthrough"
+        },
+        {
+          "node": "renderUnescaped()",
+          "file": "src\\main\\java\\com\\webshop\\toolbox\\CommentServlet.java",
+          "line": 11,
+          "role": "sink"
+        }
+      ]
+    },
+    {
+      "id": "CX-1002",
+      "queryName": "XSS_Reflected",
+      "attackClass": "xss",
+      "severity": "HIGH",
+      "state": "TO_VERIFY",
+      "sourceFile": "src\\main\\java\\com\\webshop\\toolbox\\CommentServlet.java",
+      "sourceLine": 17,
+      "sinkFile": "src\\main\\java\\com\\webshop\\toolbox\\CommentServlet.java",
+      "sinkLine": 17,
+      "taintPath": [
+        {
+          "node": "getParameter()",
+          "file": "src\\main\\java\\com\\webshop\\toolbox\\CommentServlet.java",
+          "line": 17,
+          "role": "source"
+        },
+        {
+          "node": "renderUnescaped()",
+          "file": "src\\main\\java\\com\\webshop\\toolbox\\CommentServlet.java",
+          "line": 17,
+          "role": "sink"
+        }
+      ]
+    },
+    {
+      "id": "CX-1003",
+      "queryName": "LDAP_Injection",
+      "attackClass": "ldap_injection",
+      "severity": "HIGH",
+      "state": "TO_VERIFY",
+      "sourceFile": "src\\main\\java\\com\\webshop\\toolbox\\DirectorySearchServlet.java",
+      "sourceLine": 11,
+      "sinkFile": "src\\main\\java\\com\\webshop\\toolbox\\DirectorySearchServlet.java",
+      "sinkLine": 11,
+      "taintPath": [
+        {
+          "node": "getParameter()",
+          "file": "src\\main\\java\\com\\webshop\\toolbox\\DirectorySearchServlet.java",
+          "line": 11,
+          "role": "source"
+        },
+        {
+          "node": "Validators.escapeLdap()",
+          "file": "src\\main\\java\\com\\webshop\\toolbox\\DirectorySearchServlet.java",
+          "line": 11,
+          "role": "passthrough"
+        },
+        {
+          "node": "searchDirectory()",
+          "file": "src\\main\\java\\com\\webshop\\toolbox\\DirectorySearchServlet.java",
+          "line": 11,
+          "role": "sink"
+        }
+      ]
+    },
+    {
+      "id": "CX-1004",
+      "queryName": "LDAP_Injection",
+      "attackClass": "ldap_injection",
+      "severity": "HIGH",
+      "state": "TO_VERIFY",
+      "sourceFile": "src\\main\\java\\com\\webshop\\toolbox\\DirectorySearchServlet.java",
+      "sourceLine": 17,
+      "sinkFile": "src\\main\\java\\com\\webshop\\toolbox\\DirectorySearchServlet.java",
+      "sinkLine": 17,
+      "taintPath": [
+        {
+          "node": "getParameter()",
+          "file": "src\\main\\java\\com\\webshop\\toolbox\\DirectorySearchServlet.java",
+          "line": 17,
+          "role": "source"
+        },
+        {
+          "node": "searchDirectory()",
+          "file": "src\\main\\java\\com\\webshop\\toolbox\\DirectorySearchServlet.java",
+          "line": 17,
+          "role": "sink"
+        }
+      ]
+    },
+    {
+      "id": "CX-1006",
+      "queryName": "Path_Traversal",
+      "attackClass": "path_traversal",
+      "severity": "HIGH",
+      "state": "TO_VERIFY",
+      "sourceFile": "src\\main\\java\\com\\webshop\\toolbox\\FileDownloadServlet.java",
+      "sourceLine": 11,
+      "sinkFile": "src\\main\\java\\com\\webshop\\toolbox\\FileDownloadServlet.java",
+      "sinkLine": 11,
+      "taintPath": [
+        {
+          "node": "getParameter()",
+          "file": "src\\main\\java\\com\\webshop\\toolbox\\FileDownloadServlet.java",
+          "line": 11,
+          "role": "source"
+        },
+        {
+          "node": "Validators.sanitizePath()",
+          "file": "src\\main\\java\\com\\webshop\\toolbox\\FileDownloadServlet.java",
+          "line": 11,
+          "role": "passthrough"
+        },
+        {
+          "node": "readAllBytes()",
+          "file": "src\\main\\java\\com\\webshop\\toolbox\\FileDownloadServlet.java",
+          "line": 11,
+          "role": "sink"
+        }
+      ]
+    },
+    {
+      "id": "CX-1005",
+      "queryName": "Path_Traversal",
+      "attackClass": "path_traversal",
+      "severity": "HIGH",
+      "state": "TO_VERIFY",
+      "sourceFile": "src\\main\\java\\com\\webshop\\toolbox\\FileDownloadServlet.java",
+      "sourceLine": 18,
+      "sinkFile": "src\\main\\java\\com\\webshop\\toolbox\\FileDownloadServlet.java",
+      "sinkLine": 18,
+      "taintPath": [
+        {
+          "node": "getParameter()",
+          "file": "src\\main\\java\\com\\webshop\\toolbox\\FileDownloadServlet.java",
+          "line": 18,
+          "role": "source"
+        },
+        {
+          "node": "readAllBytes()",
+          "file": "src\\main\\java\\com\\webshop\\toolbox\\FileDownloadServlet.java",
+          "line": 18,
+          "role": "sink"
+        }
+      ]
+    },
+    {
+      "id": "CX-1007",
+      "queryName": "SSRF",
+      "attackClass": "ssrf",
+      "severity": "HIGH",
+      "state": "TO_VERIFY",
+      "sourceFile": "src\\main\\java\\com\\webshop\\toolbox\\WebhookServlet.java",
+      "sourceLine": 11,
+      "sinkFile": "src\\main\\java\\com\\webshop\\toolbox\\WebhookServlet.java",
+      "sinkLine": 11,
+      "taintPath": [
+        {
+          "node": "getParameter()",
+          "file": "src\\main\\java\\com\\webshop\\toolbox\\WebhookServlet.java",
+          "line": 11,
+          "role": "source"
+        },
+        {
+          "node": "Validators.validateUrl()",
+          "file": "src\\main\\java\\com\\webshop\\toolbox\\WebhookServlet.java",
+          "line": 11,
+          "role": "passthrough"
+        },
+        {
+          "node": "fetchRemote()",
+          "file": "src\\main\\java\\com\\webshop\\toolbox\\WebhookServlet.java",
+          "line": 11,
+          "role": "sink"
+        }
+      ]
+    },
+    {
+      "id": "CX-1008",
+      "queryName": "SSRF",
+      "attackClass": "ssrf",
+      "severity": "HIGH",
+      "state": "TO_VERIFY",
+      "sourceFile": "src\\main\\java\\com\\webshop\\toolbox\\WebhookServlet.java",
+      "sourceLine": 17,
+      "sinkFile": "src\\main\\java\\com\\webshop\\toolbox\\WebhookServlet.java",
+      "sinkLine": 17,
+      "taintPath": [
+        {
+          "node": "getParameter()",
+          "file": "src\\main\\java\\com\\webshop\\toolbox\\WebhookServlet.java",
+          "line": 17,
+          "role": "source"
+        },
+        {
+          "node": "fetchRemote()",
+          "file": "src\\main\\java\\com\\webshop\\toolbox\\WebhookServlet.java",
+          "line": 17,
+          "role": "sink"
+        }
+      ]
+    }
+  ]
+}

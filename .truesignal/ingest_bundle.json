@@ -1,0 +1,118 @@
+{
+  "project": "webshop",
+  "methods_indexed": 17,
+  "baseline_findings": 8,
+  "triage_decisions": 43,
+  "candidates": [
+    {
+      "qualified_name": "InputCleaner.sanitize",
+      "hypothesis": "sanitizer",
+      "findings": [
+        "CX-1001",
+        "CX-1002",
+        "CX-1003",
+        "CX-1004",
+        "CX-1006",
+        "CX-1007"
+      ],
+      "dismissal_count": 35
+    },
+    {
+      "qualified_name": "InputCleaner.sanitizeNumeric",
+      "hypothesis": "sanitizer",
+      "findings": [
+        "CX-1005"
+      ],
+      "dismissal_count": 6
+    },
+    {
+      "qualified_name": "LegacyRequest.getParam",
+      "hypothesis": "source",
+      "findings": [],
+      "dismissal_count": 0
+    },
+    {
+      "qualified_name": "LegacyRequest.getHeaderValue",
+      "hypothesis": "source",
+      "findings": [],
+      "dismissal_count": 0
+    },
+    {
+      "qualified_name": "OrderServlet.searchByProduct",
+      "hypothesis": "source",
+      "findings": [],
+      "dismissal_count": 0
+    },
+    {
+      "qualified_name": "OrderServlet.searchByEmail",
+      "hypothesis": "source",
+      "findings": [],
+      "dismissal_count": 0
+    },
+    {
+      "qualified_name": "OrderServlet.searchSanitizedRef",
+      "hypothesis": "source",
+      "findings": [],
+      "dismissal_count": 0
+    },
+    {
+      "qualified_name": "OrderServlet.rawSearch",
+      "hypothesis": "source",
+      "findings": [],
+      "dismissal_count": 0
+    },
+    {
+      "qualified_name": "ProfileServlet.ordersForUser",
+      "hypothesis": "source",
+      "findings": [],
+      "dismissal_count": 0
+    },
+    {
+      "qualified_name": "ProfileServlet.ordersForAccount",
+      "hypothesis": "source",
+      "findings": [],
+      "dismissal_count": 0
+    },
+    {
+      "qualified_name": "ProfileServlet.searchHistory",
+      "hypothesis": "source",
+      "findings": [],
+      "dismissal_count": 0
+    },
+    {
+      "qualified_name": "ProfileServlet.contactLookup",
+      "hypothesis": "source",
+      "findings": [],
+      "dismissal_count": 0
+    },
+    {
+      "qualified_name": "OrderDao.query",
+      "hypothesis": "sink",
+      "findings": [
+        "CX-1003",
+        "CX-1004",
+        "CX-1005",
+        "CX-1008"
+      ],
+      "dismissal_count": 0
+    },
+    {
+      "qualified_name": "OrderDao.findByProduct",
+      "hypothesis": "sink",
+      "findings": [
+        "CX-1001",
+        "CX-1006"
+      ],
+      "dismissal_count": 0
+    },
+    {
+      "qualified_name": "OrderDao.findByEmail",
+      "hypothesis": "sink",
+      "findings": [
+        "CX-1002",
+        "CX-1007"
+      ],
+      "dismissal_count": 0
+    }
+  ]
+}

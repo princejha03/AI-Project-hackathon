@@ -1,0 +1,73 @@
+{
+  "project": "cmdi-demo",
+  "learned": [
+    {
+      "qualified_name": "FormatValidator.clean",
+      "file": "src\\main\\java\\com\\webshop\\cmd\\FormatValidator.java",
+      "line": 11,
+      "role": "sanitizer",
+      "confidence": 0.87,
+      "attack_classes": [
+        "sql_injection"
+      ],
+      "verdict": "APPROVED",
+      "verdict_reason": "code evidence + 4 supporting dismissals",
+      "evidence": {
+        "code_reasons": [
+          "strict allow-list: characters outside a safe set are dropped",
+          "single quotes and SQL metacharacters cannot pass through",
+          "output length capped; result trimmed"
+        ],
+        "triage_support": [
+          "CX-1002",
+          "CX-1002",
+          "CX-1002",
+          "CX-1002"
+        ],
+        "triage_count": 4,
+        "notes": "4 past dismissals reference this function as the reason.",
+        "feedback_adjustment": 0.0,
+        "effective_confidence": 0.87
+      }
+    }
+  ],
+  "needs_review": [],
+  "rejected": [
+    {
+      "qualified_name": "ReportServlet.generateReport",
+      "file": "src\\main\\java\\com\\webshop\\cmd\\ReportServlet.java",
+      "line": 13,
+      "role": "none",
+      "confidence": 0.4,
+      "attack_classes": [],
+      "verdict": "REJECTED",
+      "verdict_reason": "role none or evidence absent",
+      "evidence": {
+        "code_reasons": [],
+        "triage_support": [],
+        "triage_count": 0,
+        "notes": "no clear taint role.",
+        "feedback_adjustment": 0.0,
+        "effective_confidence": 0.4
+      }
+    },
+    {
+      "qualified_name": "ReportServlet.generateRaw",
+      "file": "src\\main\\java\\com\\webshop\\cmd\\ReportServlet.java",
+      "line": 19,
+      "role": "none",
+      "confidence": 0.4,
+      "attack_classes": [],
+      "verdict": "REJECTED",
+      "verdict_reason": "role none or evidence absent",
+      "evidence": {
+        "code_reasons": [],
+        "triage_support": [],
+        "triage_count": 0,
+        "notes": "no clear taint role.",
+        "feedback_adjustment": 0.0,
+        "effective_confidence": 0.4
+      }
+    }
+  ]
+}

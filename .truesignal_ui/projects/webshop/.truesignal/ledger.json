@@ -1,0 +1,104 @@
+[
+  {
+    "event": "applied",
+    "timestamp": "2026-08-23T13:21:04.393412+00:00",
+    "override": {
+      "name": "truesignal_source_LegacyRequest_getParam",
+      "kind": "source",
+      "function": "LegacyRequest.getParam",
+      "queryName": "SQL_Injection",
+      "attackClass": "sql_injection",
+      "language": "Java",
+      "group": "Java_Custom",
+      "cxql": "// TrueSignal override \u2014 add custom taint source: LegacyRequest.getParam\n// Evidence: 0 dismissals, confidence 1.00\nCxList customSource = All.FindByMemberAccess(\"LegacyRequest.getParam\");\nCxList db = Find_DB_In();\nresult = customSource.InfluencingOnAndNotSanitized(db, Find_Sanitize());\nresult = base.SqlInjection() + result;\n",
+      "confidence": 1.0,
+      "evidence": {
+        "code_reasons": [
+          "Wraps HttpServletRequest.getParameter() with no validation and returns it raw to callers -- the engine only recognizes getParameter() itself as a source, so every call through this legacy wrapper is invisible."
+        ],
+        "triage_support": [],
+        "triage_count": 0,
+        "notes": "Wraps HttpServletRequest.getParameter() with no validation and returns it raw to callers -- the engine only recognizes getParameter() itself as a source, so every call through this legacy wrapper is invisible.",
+        "source": "manual_report",
+        "reported_by": "appsec"
+      }
+    }
+  },
+  {
+    "event": "applied",
+    "timestamp": "2026-08-24T08:59:34.025018+00:00",
+    "override": {
+      "name": "truesignal_sanitizer_InputCleaner_sanitize",
+      "kind": "sanitizer",
+      "function": "InputCleaner.sanitize",
+      "queryName": "SQL_Injection",
+      "attackClass": "sql_injection",
+      "language": "Java",
+      "group": "Java_Custom",
+      "cxql": "// TrueSignal override \u2014 add custom sanitizer: InputCleaner.sanitize\n// Evidence: 18 dismissals, confidence 0.90\nresult = base.SqlInjection();\nCxList customSanitizer = All.FindByMemberAccess(\"InputCleaner.sanitize\");\nresult = result - result.InfluencedBy(customSanitizer.DataInfluencedBy(result));\n",
+      "confidence": 0.9,
+      "evidence": {
+        "code_reasons": [
+          "strict allow-list: characters outside a safe set are dropped",
+          "single quotes and SQL metacharacters cannot pass through",
+          "output length capped; result trimmed"
+        ],
+        "triage_support": [
+          "CX-1003",
+          "CX-1003",
+          "CX-1003",
+          "CX-1002",
+          "CX-1002",
+          "CX-1002",
+          "CX-1004",
+          "CX-1004",
+          "CX-1004",
+          "CX-1007",
+          "CX-1007",
+          "CX-1007",
+          "CX-1008",
+          "CX-1008",
+          "CX-1008",
+          "CX-1005",
+          "CX-1005",
+          "CX-1005"
+        ],
+        "triage_count": 18,
+        "notes": "18 past dismissals reference this function as the reason.",
+        "feedback_adjustment": 0.0,
+        "effective_confidence": 0.9
+      }
+    }
+  },
+  {
+    "event": "applied",
+    "timestamp": "2026-08-24T08:59:34.025941+00:00",
+    "override": {
+      "name": "truesignal_sanitizer_InputCleaner_sanitizeNumeric",
+      "kind": "sanitizer",
+      "function": "InputCleaner.sanitizeNumeric",
+      "queryName": "SQL_Injection",
+      "attackClass": "sql_injection",
+      "language": "Java",
+      "group": "Java_Custom",
+      "cxql": "// TrueSignal override \u2014 add custom sanitizer: InputCleaner.sanitizeNumeric\n// Evidence: 3 dismissals, confidence 0.87\nresult = base.SqlInjection();\nCxList customSanitizer = All.FindByMemberAccess(\"InputCleaner.sanitizeNumeric\");\nresult = result - result.InfluencedBy(customSanitizer.DataInfluencedBy(result));\n",
+      "confidence": 0.87,
+      "evidence": {
+        "code_reasons": [
+          "strict allow-list: characters outside a safe set are dropped",
+          "single quotes and SQL metacharacters cannot pass through",
+          "output length capped; result trimmed"
+        ],
+        "triage_support": [
+          "CX-1006",
+          "CX-1006",
+          "CX-1006"
+        ],
+        "triage_count": 3,
+        "notes": "3 past dismissals reference this function as the reason.",
+        "feedback_adjustment": 0.0,
+        "effective_confidence": 0.87
+      }
+    }
+  }
+]

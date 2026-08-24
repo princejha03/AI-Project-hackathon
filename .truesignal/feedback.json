@@ -1,0 +1,51 @@
+[
+  {
+    "signature": "sanitizer:sql_injection",
+    "role": "sanitizer",
+    "attack_class": "sql_injection",
+    "outcome": "approved",
+    "timestamp": "2026-08-24T09:03:35.516978+00:00"
+  },
+  {
+    "signature": "sanitizer:sql_injection",
+    "role": "sanitizer",
+    "attack_class": "sql_injection",
+    "outcome": "approved",
+    "timestamp": "2026-08-24T09:03:35.518480+00:00"
+  },
+  {
+    "signature": "source:sql_injection",
+    "role": "source",
+    "attack_class": "sql_injection",
+    "outcome": "approved",
+    "timestamp": "2026-08-24T09:03:35.519325+00:00"
+  },
+  {
+    "signature": "source:sql_injection",
+    "role": "source",
+    "attack_class": "sql_injection",
+    "outcome": "approved",
+    "timestamp": "2026-08-24T09:03:35.520843+00:00"
+  },
+  {
+    "signature": "sink:sql_injection",
+    "role": "sink",
+    "attack_class": "sql_injection",
+    "outcome": "approved",
+    "timestamp": "2026-08-24T09:03:35.522312+00:00"
+  },
+  {
+    "signature": "sink:sql_injection",
+    "role": "sink",
+    "attack_class": "sql_injection",
+    "outcome": "approved",
+    "timestamp": "2026-08-24T09:03:35.523348+00:00"
+  },
+  {
+    "signature": "sink:sql_injection",
+    "role": "sink",
+    "attack_class": "sql_injection",
+    "outcome": "approved",
+    "timestamp": "2026-08-24T09:03:35.524425+00:00"
+  }
+]

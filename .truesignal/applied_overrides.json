@@ -1,0 +1,201 @@
+[
+  {
+    "name": "truesignal_sanitizer_InputCleaner_sanitize",
+    "kind": "sanitizer",
+    "function": "InputCleaner.sanitize",
+    "queryName": "SQL_Injection",
+    "attackClass": "sql_injection",
+    "language": "Java",
+    "group": "Java_Custom",
+    "cxql": "// TrueSignal override \u2014 add custom sanitizer: InputCleaner.sanitize\n// Evidence: 35 dismissals, confidence 0.93\nresult = base.SqlInjection();\nCxList customSanitizer = All.FindByMemberAccess(\"InputCleaner.sanitize\");\nresult = result - result.InfluencedBy(customSanitizer.DataInfluencedBy(result));\n",
+    "confidence": 0.93,
+    "evidence": {
+      "code_reasons": [
+        "strict allow-list: characters outside a safe set are dropped",
+        "single quotes and SQL metacharacters cannot pass through",
+        "output length capped; result trimmed"
+      ],
+      "triage_support": [
+        "CX-1001",
+        "CX-1001",
+        "CX-1001",
+        "CX-1001",
+        "CX-1001",
+        "CX-1001",
+        "CX-1002",
+        "CX-1002",
+        "CX-1002",
+        "CX-1002",
+        "CX-1002",
+        "CX-1002",
+        "CX-1003",
+        "CX-1003",
+        "CX-1003",
+        "CX-1003",
+        "CX-1003",
+        "CX-1003",
+        "CX-1004",
+        "CX-1004",
+        "CX-1004",
+        "CX-1004",
+        "CX-1004",
+        "CX-1004",
+        "CX-1006",
+        "CX-1006",
+        "CX-1006",
+        "CX-1006",
+        "CX-1006",
+        "CX-1006",
+        "CX-1007",
+        "CX-1007",
+        "CX-1007",
+        "CX-1007",
+        "CX-1007"
+      ],
+      "triage_count": 35,
+      "notes": "35 past dismissals reference this function as the reason.",
+      "feedback_adjustment": 0.0,
+      "effective_confidence": 0.93
+    }
+  },
+  {
+    "name": "truesignal_sanitizer_InputCleaner_sanitizeNumeric",
+    "kind": "sanitizer",
+    "function": "InputCleaner.sanitizeNumeric",
+    "queryName": "SQL_Injection",
+    "attackClass": "sql_injection",
+    "language": "Java",
+    "group": "Java_Custom",
+    "cxql": "// TrueSignal override \u2014 add custom sanitizer: InputCleaner.sanitizeNumeric\n// Evidence: 6 dismissals, confidence 0.87\nresult = base.SqlInjection();\nCxList customSanitizer = All.FindByMemberAccess(\"InputCleaner.sanitizeNumeric\");\nresult = result - result.InfluencedBy(customSanitizer.DataInfluencedBy(result));\n",
+    "confidence": 0.87,
+    "evidence": {
+      "code_reasons": [
+        "strict allow-list: characters outside a safe set are dropped",
+        "single quotes and SQL metacharacters cannot pass through",
+        "output length capped; result trimmed"
+      ],
+      "triage_support": [
+        "CX-1005",
+        "CX-1005",
+        "CX-1005",
+        "CX-1005",
+        "CX-1005",
+        "CX-1005"
+      ],
+      "triage_count": 6,
+      "notes": "6 past dismissals reference this function as the reason.",
+      "feedback_adjustment": 0.0,
+      "effective_confidence": 0.87
+    }
+  },
+  {
+    "name": "truesignal_source_LegacyRequest_getParam",
+    "kind": "source",
+    "function": "LegacyRequest.getParam",
+    "queryName": "SQL_Injection",
+    "attackClass": "sql_injection",
+    "language": "Java",
+    "group": "Java_Custom",
+    "cxql": "// TrueSignal override \u2014 add custom taint source: LegacyRequest.getParam\n// Evidence: 0 dismissals, confidence 0.97\nCxList customSource = All.FindByMemberAccess(\"LegacyRequest.getParam\");\nCxList db = Find_DB_In();\nresult = customSource.InfluencingOnAndNotSanitized(db, Find_Sanitize());\nresult = base.SqlInjection() + result;\n",
+    "confidence": 0.97,
+    "evidence": {
+      "code_reasons": [
+        "directly returns HttpServletRequest accessor values",
+        "no validation or transformation on the returned data"
+      ],
+      "triage_support": [],
+      "triage_count": 0,
+      "notes": "wrapper class \u2014 engine sees only the wrapper, not the inner accessor.",
+      "feedback_adjustment": 0.0,
+      "effective_confidence": 0.97
+    }
+  },
+  {
+    "name": "truesignal_source_LegacyRequest_getHeaderValue",
+    "kind": "source",
+    "function": "LegacyRequest.getHeaderValue",
+    "queryName": "SQL_Injection",
+    "attackClass": "sql_injection",
+    "language": "Java",
+    "group": "Java_Custom",
+    "cxql": "// TrueSignal override \u2014 add custom taint source: LegacyRequest.getHeaderValue\n// Evidence: 0 dismissals, confidence 0.97\nCxList customSource = All.FindByMemberAccess(\"LegacyRequest.getHeaderValue\");\nCxList db = Find_DB_In();\nresult = customSource.InfluencingOnAndNotSanitized(db, Find_Sanitize());\nresult = base.SqlInjection() + result;\n",
+    "confidence": 0.97,
+    "evidence": {
+      "code_reasons": [
+        "directly returns HttpServletRequest accessor values",
+        "no validation or transformation on the returned data"
+      ],
+      "triage_support": [],
+      "triage_count": 0,
+      "notes": "wrapper class \u2014 engine sees only the wrapper, not the inner accessor.",
+      "feedback_adjustment": 0.0,
+      "effective_confidence": 0.97
+    }
+  },
+  {
+    "name": "truesignal_sink_OrderDao_query",
+    "kind": "sink",
+    "function": "OrderDao.query",
+    "queryName": "SQL_Injection",
+    "attackClass": "sql_injection",
+    "language": "Java",
+    "group": "Java_Custom",
+    "cxql": "// TrueSignal override \u2014 add custom sink: OrderDao.query\n// Evidence: 0 dismissals, confidence 0.95\nCxList customSink = All.FindByMemberAccess(\"OrderDao.query\");\nresult = base.SqlInjection() +\n    Find_Interactive_Inputs().InfluencingOnAndNotSanitized(customSink, Find_Sanitize());\n",
+    "confidence": 0.95,
+    "evidence": {
+      "code_reasons": [
+        "builds SQL via string concatenation",
+        "passes result to Statement.executeQuery"
+      ],
+      "triage_support": [],
+      "triage_count": 0,
+      "notes": "already a known sink pattern; confirms engine coverage.",
+      "feedback_adjustment": 0.0,
+      "effective_confidence": 0.95
+    }
+  },
+  {
+    "name": "truesignal_sink_OrderDao_findByProduct",
+    "kind": "sink",
+    "function": "OrderDao.findByProduct",
+    "queryName": "SQL_Injection",
+    "attackClass": "sql_injection",
+    "language": "Java",
+    "group": "Java_Custom",
+    "cxql": "// TrueSignal override \u2014 add custom sink: OrderDao.findByProduct\n// Evidence: 0 dismissals, confidence 0.95\nCxList customSink = All.FindByMemberAccess(\"OrderDao.findByProduct\");\nresult = base.SqlInjection() +\n    Find_Interactive_Inputs().InfluencingOnAndNotSanitized(customSink, Find_Sanitize());\n",
+    "confidence": 0.95,
+    "evidence": {
+      "code_reasons": [
+        "builds SQL via string concatenation",
+        "passes result to Statement.executeQuery"
+      ],
+      "triage_support": [],
+      "triage_count": 0,
+      "notes": "already a known sink pattern; confirms engine coverage.",
+      "feedback_adjustment": 0.0,
+      "effective_confidence": 0.95
+    }
+  },
+  {
+    "name": "truesignal_sink_OrderDao_findByEmail",
+    "kind": "sink",
+    "function": "OrderDao.findByEmail",
+    "queryName": "SQL_Injection",
+    "attackClass": "sql_injection",
+    "language": "Java",
+    "group": "Java_Custom",
+    "cxql": "// TrueSignal override \u2014 add custom sink: OrderDao.findByEmail\n// Evidence: 0 dismissals, confidence 0.95\nCxList customSink = All.FindByMemberAccess(\"OrderDao.findByEmail\");\nresult = base.SqlInjection() +\n    Find_Interactive_Inputs().InfluencingOnAndNotSanitized(customSink, Find_Sanitize());\n",
+    "confidence": 0.95,
+    "evidence": {
+      "code_reasons": [
+        "builds SQL via string concatenation",
+        "passes result to Statement.executeQuery"
+      ],
+      "triage_support": [],
+      "triage_count": 0,
+      "notes": "already a known sink pattern; confirms engine coverage.",
+      "feedback_adjustment": 0.0,
+      "effective_confidence": 0.95
+    }
+  }
+]

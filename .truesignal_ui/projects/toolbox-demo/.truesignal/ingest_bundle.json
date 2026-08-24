@@ -1,0 +1,88 @@
+{
+  "project": "toolbox-demo",
+  "methods_indexed": 16,
+  "baseline_findings": 8,
+  "triage_decisions": 16,
+  "candidates": [
+    {
+      "qualified_name": "Validators.encodeHtml",
+      "hypothesis": "sanitizer",
+      "findings": [
+        "CX-1001"
+      ],
+      "dismissal_count": 4
+    },
+    {
+      "qualified_name": "Validators.escapeLdap",
+      "hypothesis": "sanitizer",
+      "findings": [
+        "CX-1003"
+      ],
+      "dismissal_count": 4
+    },
+    {
+      "qualified_name": "Validators.sanitizePath",
+      "hypothesis": "sanitizer",
+      "findings": [
+        "CX-1006"
+      ],
+      "dismissal_count": 4
+    },
+    {
+      "qualified_name": "Validators.validateUrl",
+      "hypothesis": "sanitizer",
+      "findings": [
+        "CX-1007"
+      ],
+      "dismissal_count": 4
+    },
+    {
+      "qualified_name": "CommentServlet.renderComment",
+      "hypothesis": "source",
+      "findings": [],
+      "dismissal_count": 0
+    },
+    {
+      "qualified_name": "CommentServlet.renderRawComment",
+      "hypothesis": "source",
+      "findings": [],
+      "dismissal_count": 0
+    },
+    {
+      "qualified_name": "DirectorySearchServlet.searchEmployees",
+      "hypothesis": "source",
+      "findings": [],
+      "dismissal_count": 0
+    },
+    {
+      "qualified_name": "DirectorySearchServlet.searchRaw",
+      "hypothesis": "source",
+      "findings": [],
+      "dismissal_count": 0
+    },
+    {
+      "qualified_name": "FileDownloadServlet.downloadReport",
+      "hypothesis": "source",
+      "findings": [],
+      "dismissal_count": 0
+    },
+    {
+      "qualified_name": "FileDownloadServlet.downloadRaw",
+      "hypothesis": "source",
+      "findings": [],
+      "dismissal_count": 0
+    },
+    {
+      "qualified_name": "WebhookServlet.fetchPreview",
+      "hypothesis": "source",
+      "findings": [],
+      "dismissal_count": 0
+    },
+    {
+      "qualified_name": "WebhookServlet.fetchRawUrl",
+      "hypothesis": "source",
+      "findings": [],
+      "dismissal_count": 0
+    }
+  ]
+}

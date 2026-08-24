@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+{% block title %}Activity - Checkmarx TrueSignal{% endblock %}
+{% block content %}
+  <div class="page-head">
+    <div>
+      <h1>Activity</h1>
+      <p class="subtitle">Every audit decision and ledger event across all projects &mdash; filter, slice, and see who's triaging what.</p>
+    </div>
+  </div>
+
+  <div class="card filter-panel">
+    <div class="filter-panel-label">Filters</div>
+    <form class="filter-bar" method="get">
+      <label>From
+        <input type="date" name="date_from" value="{{ date_from }}">
+      </label>
+      <label>To
+        <input type="date" name="date_to" value="{{ date_to }}">
+      </label>
+      <label>Reviewer
+        <select name="user">
+          <option value="">All reviewers</option>
+          {% for u in all_users %}
+            <option value="{{ u }}" {{ 'selected' if u == user_filter }}>{{ u }}</option>
+          {% endfor %}
+        </select>
+      </label>
+      <label>Min. triage results
+        <input type="number" name="min_count" min="0" step="1" placeholder="0" value="{{ min_count }}">
+      </label>
+      <button class="btn btn-primary" type="submit">Apply</button>
+      {% if date_from or date_to or user_filter or min_count %}
+        <a class="btn" href="{{ url_for('activity') }}">Clear</a>
+      {% endif %}
+    </form>
+  </div>
+
+  <div class="stat-row">
+    <div class="stat"><div class="stat-value">{{ kpis.total_decisions }}</div><div class="stat-label">Triage decisions</div></div>
+    <div class="stat"><div class="stat-value">{{ kpis.unique_reviewers }}</div><div class="stat-label">Reviewers</div></div>
+    <div class="stat stat-good"><div class="stat-value" title="{{ kpis.top_reviewer }}">{{ kpis.top_reviewer.split('@')[0] }}</div><div class="stat-label">Top reviewer</div></div>
+    <div class="stat stat-good"><div class="stat-value">{{ kpis.top_reviewer_count }}</div><div class="stat-label">Their triage count</div></div>
+  </div>
+
+  <div class="chart-row">
+    <div class="card chart-card chart-card-wide">
+      <h3>Triage decisions by reviewer</h3>
+      {% if reviewer_bars.series %}
+        <div id="chart-reviewers"></div>
+        <script type="application/json" data-chart-for="chart-reviewers" data-chart-type="bars">{{ reviewer_bars|tojson }}</script>
+      {% else %}
+        <p class="faint small">No triage decisions match these filters.</p>
+      {% endif %}
+    </div>
+    <div class="card chart-card">
+      <h3>Resolution breakdown</h3>
+      {% if resolution_chart %}
+        <div id="chart-resolution"></div>
+        <script type="application/json" data-chart-for="chart-resolution" data-chart-type="donut">{{ {"segments": resolution_chart}|tojson }}</script>
+      {% else %}
+        <p class="faint small">No triage decisions match these filters.</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="card chart-card">
+    <h3>Triage volume by day</h3>
+    {% if trend_chart.points %}
+      <div id="chart-trend"></div>
+      <script type="application/json" data-chart-for="chart-trend" data-chart-type="trend">{{ trend_chart|tojson }}</script>
+    {% else %}
+      <p class="faint small">No triage decisions match these filters.</p>
+    {% endif %}
+  </div>
+
+  <div class="section-label">Top reviewers {% if date_from or date_to or user_filter or min_count %}<span class="dim">(filtered)</span>{% endif %}</div>
+  <div class="card">
+    {% if not leaderboard %}
+      <p class="faint small">No triage decisions match these filters.</p>
+    {% else %}
+      <div class="grid-wrap">
+      <table class="grid">
+        <thead><tr><th>Rank</th><th>Reviewer</th><th>Triage decisions</th></tr></thead>
+        <tbody>
+          {% set top_count = leaderboard[0].count %}
+          {% for row in leaderboard %}
+            <tr class="{{ 'leaderboard-top' if row.count == top_count }}">
+              <td class="mono">#{{ loop.index }}</td>
+              <td><strong>{{ row.user }}</strong>{% if row.count == top_count %} <span class="pill pill-downgraded">{{ 'tied for most active' if leaderboard|selectattr('count', 'equalto', top_count)|list|length > 1 else 'most active' }}</span>{% endif %}</td>
+              <td class="mono">{{ row.count }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      </div>
+    {% endif %}
+  </div>
+
+  <div class="section-label">Timeline</div>
+  {% if not events %}
+    <div class="card empty-state">
+      <svg width="36" height="36" viewBox="0 0 24 24" fill="none"><path d="M9 6h11M9 12h11M9 18h11M4 6h.01M4 12h.01M4 18h.01" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+      <p>
+        {% if date_from or date_to or user_filter %}
+          No activity matches these filters.
+        {% else %}
+          No activity yet &mdash; audit a finding or run an analysis to see it here.
+        {% endif %}
+      </p>
+    </div>
+  {% else %}
+  <div class="activity-feed">
+    {% for e in events %}
+      <div class="activity-item">
+        <div class="activity-dot {{ 'activity-dot-danger' if e.type == 'ledger' and e.event == 'rolled_back' else ('activity-dot-good' if e.type == 'ledger' or e.resolution == 'NOT_EXPLOITABLE' else '') }}"></div>
+        <div class="activity-body">
+          {% if e.type == 'audit' %}
+            <div><strong>{{ e.user }}</strong> recorded <span class="pill pill-{{ 'downgraded' if e.action == 'DISMISS' else 'confirmed' if e.action == 'CONFIRM' else 'open' }}">{{ e.resolution }}</span>
+              on <code>{{ e.finding_id }}</code> &middot; <a href="{{ url_for('project_overview', pid=e.project_id) }}">{{ e.project_name }}</a></div>
+            {% if e.comment %}<div class="dim small">&ldquo;{{ e.comment }}&rdquo;</div>{% endif %}
+          {% elif e.type == 'summary' %}
+            <div><span class="pill pill-info">AI summary</span>
+              <a href="{{ url_for('project_overview', pid=e.project_id) }}">{{ e.project_name }}</a></div>
+            <div class="small">{{ e.summary }}</div>
+          {% else %}
+            <div><span class="pill pill-{{ 'downgraded' if e.event == 'applied' else 'warn' }}">{{ e.event }}</span>
+              <span class="pill pill-info">{{ e.kind }}</span>
+              <code>{{ e.function }}</code> &middot; <a href="{{ url_for('ledger_view', pid=e.project_id) }}">{{ e.project_name }}</a>
+              <span class="dim small">confidence {{ '%.2f'|format(e.confidence) }}</span></div>
+          {% endif %}
+        </div>
+        <div class="activity-time dim small">{{ e.timestamp[:19] }}</div>
+      </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+{% endblock %}

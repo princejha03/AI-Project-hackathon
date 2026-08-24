@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+
+{% block title %}Help & Documentation - Checkmarx TrueSignal{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>Help & Documentation</h1>
+    <p class="subtitle">Learn how to use TrueSignal effectively</p>
+  </div>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-bottom: 28px;">
+  <a href="#getting-started" class="card card-hoverable" style="text-decoration: none;">
+    <h3 style="color: var(--accent); margin-top: 0;">Getting Started</h3>
+    <p style="margin: 0; color: var(--text-dim);">Upload your first project and learn the basics</p>
+  </a>
+  <a href="#audit-workflow" class="card card-hoverable" style="text-decoration: none;">
+    <h3 style="color: var(--accent); margin-top: 0;">Audit Workflow</h3>
+    <p style="margin: 0; color: var(--text-dim);">Triage findings and manage overrides</p>
+  </a>
+  <a href="#api" class="card card-hoverable" style="text-decoration: none;">
+    <h3 style="color: var(--accent); margin-top: 0;">API Reference</h3>
+    <p style="margin: 0; color: var(--text-dim);">Integrate TrueSignal with external tools</p>
+  </a>
+  <a href="#faq" class="card card-hoverable" style="text-decoration: none;">
+    <h3 style="color: var(--accent); margin-top: 0;">FAQ</h3>
+    <p style="margin: 0; color: var(--text-dim);">Common questions and troubleshooting</p>
+  </a>
+</div>
+
+<div class="card" id="getting-started">
+  <h2>Getting Started</h2>
+  <p>TrueSignal is a self-tuning SAST agent that learns your codebase's security semantics.</p>
+  
+  <h3>1. Upload a Project</h3>
+  <p>Start by uploading a .zip archive of your Java project. The system will:</p>
+  <ul>
+    <li>Index all methods and their relationships</li>
+    <li>Run an initial SAST scan (mock mode)</li>
+    <li>Build a baseline of findings</li>
+  </ul>
+  
+  <h3>2. Audit Findings</h3>
+  <p>Review each finding and triage it:</p>
+  <ul>
+    <li><strong>Confirmed:</strong> This is a real vulnerability</li>
+    <li><strong>Not Exploitable:</strong> This is a false positive</li>
+    <li><strong>To Verify:</strong> Needs further investigation</li>
+  </ul>
+  
+  <h3>3. Run Analysis</h3>
+  <p>Once you have enough triage data, run the analysis to learn from your decisions. TrueSignal will:</p>
+  <ul>
+    <li>Identify patterns in your code (sanitizers, sources, sinks)</li>
+    <li>Classify functions by their security role</li>
+    <li>Verify findings are solid before applying</li>
+    <li>Generate CxQL overrides for the SAST engine</li>
+  </ul>
+</div>
+
+<div class="card" id="audit-workflow">
+  <h2>Audit Workflow</h2>
+  
+  <h3>Bulk Audit</h3>
+  <p>Select multiple findings to triage them together:</p>
+  <ol>
+    <li>Check the checkboxes next to findings</li>
+    <li>A bulk bar appears at the bottom</li>
+    <li>Choose a decision and optional comment</li>
+    <li>Click "Apply to selected"</li>
+  </ol>
+  
+  <h3>Individual Audit</h3>
+  <p>For detailed analysis, click "Audit" on any finding:</p>
+  <ul>
+    <li>See the full taint path with code snippets</li>
+    <li>Review the decision history</li>
+    <li>Get AI-powered suggestions</li>
+    <li>Add your decision and audit comment</li>
+  </ul>
+  
+  <h3>Filtering</h3>
+  <p>Use filters to focus on specific findings:</p>
+  <ul>
+    <li><strong>Severity:</strong> Critical, High, Medium, Low</li>
+    <li><strong>State:</strong> To Verify, Not Exploitable</li>
+    <li><strong>Search:</strong> Find by ID, query name, or taint path</li>
+  </ul>
+</div>
+
+<div class="card" id="api">
+  <h2>API Reference</h2>
+  
+  <h3>Export Findings</h3>
+  <pre class="snippet">GET /projects/&lt;pid&gt;/export/findings.json
+GET /projects/&lt;pid&gt;/export/findings.json?format=csv</pre>
+  
+  <h3>Project Statistics</h3>
+  <pre class="snippet">GET /api/projects/&lt;pid&gt;/statistics</pre>
+  
+  <h3>Compare Projects</h3>
+  <pre class="snippet">GET /api/projects/compare</pre>
+  
+  <h3>Search Findings</h3>
+  <pre class="snippet">GET /api/search/findings?q=sql_injection</pre>
+  
+  <h3>List Projects</h3>
+  <pre class="snippet">GET /api/projects</pre>
+</div>
+
+<div class="card" id="faq">
+  <h2>Frequently Asked Questions</h2>
+  
+  <h3>What's the difference between "Confirmed" and "Not Exploitable"?</h3>
+  <p><strong>Confirmed:</strong> You've verified this is a real security issue that needs to be fixed.</p>
+  <p><strong>Not Exploitable:</strong> The code path is protected by a sanitizer, input validation, or other security control.</p>
+  
+  <h3>How does TrueSignal learn from my decisions?</h3>
+  <p>TrueSignal analyzes your triage decisions to identify patterns:
+  <ul>
+    <li>Functions that you repeatedly mark as "Not Exploitable" are likely sanitizers</li>
+    <li>Functions that consistently appear at the start of taint paths are likely sources</li>
+    <li>Functions that consistently appear at the end are likely sinks</li>
+  </ul>
+  </p>
+  
+  <h3>What are "Overrides"?</h3>
+  <p>Overrides are CxQL queries that the SAST engine applies automatically. They teach the engine about your custom sanitizers and sources, reducing false positives and false negatives.</p>
+  
+  <h3>Can I rollback an override?</h3>
+  <p>Yes! Go to the Ledger page for any project and click "Rollback" on an override. This reverts its effects and removes it from future scans.</p>
+  
+  <h3>What's "Auto-Approve"?</h3>
+  <p>When TrueSignal's confidence in a learning is very high (confidence score + triage support), it can auto-approve. You can review it before it's applied.</p>
+  
+  <h3>How do I export findings?</h3>
+  <p>Click the "Export JSON" button on the Findings page. You can also filter before exporting by severity or state.</p>
+  
+  <h3>Does TrueSignal require live Checkmarx connection?</h3>
+  <p>No! By default, TrueSignal runs in mock mode with a built-in naive scanner. To use real Checkmarx scans, set the <code>CX_*</code> environment variables.</p>
+</div>
+
+<div class="card">
+  <h2>Need Help?</h2>
+  <p>For issues, questions, or feature requests, please visit our <a href="#">GitHub repository</a> or contact support.</p>
+</div>
+
+{% endblock %}

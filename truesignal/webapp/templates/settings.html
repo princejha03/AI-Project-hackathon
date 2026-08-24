@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% from "_tabs.html" import project_tabs %}
+{% block title %}Settings - {{ meta.name }}{% endblock %}
+{% block subnav %}{{ project_tabs(pid, meta, 'settings') }}{% endblock %}
+{% block shell_class %}shell-narrow{% endblock %}
+{% block content %}
+  <div class="page-head">
+    <div>
+      <h1>Settings</h1>
+      <p class="subtitle">Verification gate thresholds for {{ meta.name }}.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Auto-approval gate</h3>
+    <p class="dim small" style="margin-top:-6px">
+      These two numbers decide what <a href="{{ url_for('analyze', pid=pid) }}">Run TrueSignal analysis</a> can
+      auto-approve versus send to <code>NEEDS_REVIEW</code>. Raising the confidence floor or the triage-support
+      minimum makes the gate stricter; nothing is ever applied without clearing it (or without your explicit approval
+      on the review screen).
+    </p>
+    {% set read_only = current_user_label != 'Admin' %}
+    {% if read_only %}
+      <p class="dim small" style="margin-bottom:12px">
+        <strong>Read-only</strong> for your role &mdash; only Admin can change these.
+      </p>
+    {% endif %}
+    <form method="post">
+      <label>Confidence floor (0.00&ndash;1.00)
+        <input type="text" name="min_confidence_auto" value="{{ '%.2f'|format(min_confidence_auto) }}" inputmode="decimal" {{ 'disabled' if read_only }}>
+      </label>
+      <label>Minimum triage support for sanitizers
+        <input type="text" name="min_triage_support" value="{{ min_triage_support }}" inputmode="numeric" {{ 'disabled' if read_only }}>
+      </label>
+      {% if not read_only %}
+      <div class="actions">
+        <button class="btn btn-primary" type="submit">Save settings</button>
+      </div>
+      {% endif %}
+    </form>
+  </div>
+
+  <div class="card">
+    <h3>Confidence calibration</h3>
+    <p class="dim small" style="margin-top:-6px">
+      How each classification signature's learned confidence adjustment has moved as audits accumulate
+      here &mdash; approvals nudge it up, declines and rollbacks nudge it down, bounded to &plusmn;0.10 and
+      applied here on top of the gate above (see <code>truesignal feedback</code>). Zero with no history.
+    </p>
+    {% if not calibration %}
+      <p class="faint small" style="margin-bottom:0">No audit decisions recorded yet for this project.</p>
+    {% else %}
+      {% for sig in calibration %}
+        <div class="calibration-row">
+          <div class="calibration-head">
+            <code>{{ sig.signature }}</code>
+            <span class="dim small">{{ sig.approved }} approved &middot; {{ sig.rejected }} rejected &middot; {{ sig.rolled_back }} rolled back</span>
+            <span class="pill {{ 'pill-downgraded' if sig.adjustment >= 0 else 'pill-critical' }}">{{ '%+.3f'|format(sig.adjustment) }}</span>
+          </div>
+          <div id="chart-calib-{{ loop.index }}"></div>
+          <script type="application/json" data-chart-for="chart-calib-{{ loop.index }}" data-chart-type="signed-trend">{{ {"points": sig.points}|tojson }}</script>
+        </div>
+      {% endfor %}
+    {% endif %}
+  </div>
+
+  <div class="card">
+    <h3 class="dim">Environment defaults</h3>
+    <div class="kv-list">
+      <div><span class="dim">Confidence floor</span><span class="mono">{{ '%.2f'|format(defaults.min_confidence_auto) }}</span></div>
+      <div><span class="dim">Minimum triage support</span><span class="mono">{{ defaults.min_triage_support }}</span></div>
+    </div>
+    {% if saved %}
+      <p class="small dim" style="margin-bottom:0">This project currently overrides the defaults above.</p>
+      {% if current_user_label == 'Admin' %}
+      <form method="post" style="margin-top:10px">
+        <input type="hidden" name="reset" value="1">
+        <button class="btn btn-small" type="submit">Reset to defaults</button>
+      </form>
+      {% endif %}
+    {% else %}
+      <p class="small faint" style="margin-bottom:0">This project is using the defaults &mdash; no override saved.</p>
+    {% endif %}
+  </div>
+{% endblock %}

@@ -1,0 +1,41 @@
+{
+  "projectId": "cmdi-demo",
+  "decisions": [
+    {
+      "findingId": "CX-1002",
+      "scanId": "scan-seed",
+      "action": "DISMISS",
+      "resolution": "NOT_EXPLOITABLE",
+      "comment": "goes through FormatValidator.clean, safe",
+      "user": "prince@checkmarx.com",
+      "date": "2026-08-16T10:05:50.981774+00:00"
+    },
+    {
+      "findingId": "CX-1002",
+      "scanId": "scan-seed",
+      "action": "DISMISS",
+      "resolution": "NOT_EXPLOITABLE",
+      "comment": "goes through FormatValidator.clean, safe",
+      "user": "abhishek@checkmarx.com",
+      "date": "2026-08-18T10:05:50.981788+00:00"
+    },
+    {
+      "findingId": "CX-1002",
+      "scanId": "scan-seed",
+      "action": "DISMISS",
+      "resolution": "NOT_EXPLOITABLE",
+      "comment": "goes through FormatValidator.clean, safe",
+      "user": "vishak@checkmarx.com",
+      "date": "2026-08-20T10:05:50.981790+00:00"
+    },
+    {
+      "findingId": "CX-1002",
+      "scanId": "scan-seed",
+      "action": "DISMISS",
+      "resolution": "NOT_EXPLOITABLE",
+      "comment": "goes through FormatValidator.clean, safe",
+      "user": "apurva@checkmarx.com",
+      "date": "2026-08-22T10:05:50.981792+00:00"
+    }
+  ]
+}

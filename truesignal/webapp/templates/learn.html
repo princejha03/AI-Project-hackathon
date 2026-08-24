@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}Analysis - Checkmarx TrueSignal{% endblock %}
+{% block content %}
+  <div class="page-head">
+    <div>
+      <h1>Proposed learnings</h1>
+      <p class="subtitle">
+        Nothing here has been applied yet. Each item cleared TrueSignal's evidence gate
+        (code reasons{% if learned %}, and for sanitizers, enough triage support{% endif %}) —
+        review the evidence, pick what you approve, and apply.
+      </p>
+    </div>
+    <a class="btn" href="{{ url_for('project_overview', pid=pid) }}">&larr; Project</a>
+  </div>
+
+  <form method="post">
+    <input type="hidden" name="confirm" value="1">
+
+    {% if learned %}
+    <div class="section-label">Cleared the auto-approve bar</div>
+    <div class="card">
+      {% for v in learned %}
+        <label class="learn-row">
+          <input type="checkbox" name="approve" value="{{ v.qualified_name }}" checked>
+          <div>
+            <div class="item-head"><strong><code>{{ v.qualified_name }}()</code></strong> &rarr; <span class="pill pill-info">{{ v.role }}</span>
+              <span class="dim small">confidence {{ '%.2f'|format(v.confidence) }}</span></div>
+            <div class="faint small">{{ v.file }}:{{ v.line }}</div>
+            <ul class="evidence-list">
+              {% for r in v.evidence.code_reasons %}<li>{{ r }}</li>{% endfor %}
+              <li>triage support: {{ v.evidence.triage_count }} decision(s)</li>
+            </ul>
+          </div>
+        </label>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if needs_review %}
+    <div class="section-label">Needs human review</div>
+    <div class="card">
+      {% for v in needs_review %}
+        <label class="learn-row">
+          <input type="checkbox" name="approve" value="{{ v.qualified_name }}">
+          <div>
+            <div class="item-head"><strong><code>{{ v.qualified_name }}()</code></strong> &rarr; <span class="pill pill-warn">{{ v.role }}</span>
+              <span class="dim small">confidence {{ '%.2f'|format(v.confidence) }}</span></div>
+            <div class="faint small">{{ v.file }}:{{ v.line }} &mdash; {{ v.verdict_reason }}</div>
+            <ul class="evidence-list">
+              {% for r in v.evidence.code_reasons %}<li>{{ r }}</li>{% endfor %}
+              <li>triage support: {{ v.evidence.triage_count }} decision(s)</li>
+            </ul>
+          </div>
+        </label>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <button class="btn btn-primary" type="submit">Approve selected &amp; apply</button>
+  </form>
+{% endblock %}

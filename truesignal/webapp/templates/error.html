@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+
+{% block title %}Error {{ code }} - Checkmarx TrueSignal{% endblock %}
+
+{% block content %}
+<div class="error-container">
+  <div class="error-content">
+    <div class="error-icon">
+      {% if code == 404 %}
+        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2z"/>
+          <path d="M12 8v8M9 11h6"/>
+        </svg>
+      {% elif code == 500 %}
+        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2z"/>
+          <path d="M12 8v8M8 12h8"/>
+          <path d="M9 15a2 2 0 1 1 4 0"/>
+        </svg>
+      {% else %}
+        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2z"/>
+          <path d="M12 16v.01M12 13V9"/>
+        </svg>
+      {% endif %}
+    </div>
+    
+    <h1 class="error-code">{{ code }}</h1>
+    <p class="error-message">{{ message }}</p>
+    
+    {% if code == 404 %}
+      <p class="error-description">The page you're looking for doesn't exist.</p>
+    {% elif code == 500 %}
+      <p class="error-description">Something went wrong on our end. Please try again later.</p>
+    {% elif code == 403 %}
+      <p class="error-description">You don't have permission to access this resource.</p>
+    {% else %}
+      <p class="error-description">An error occurred.</p>
+    {% endif %}
+    
+    <div class="error-actions">
+      <a href="{{ url_for('dashboard') }}" class="btn btn-primary">Back to Dashboard</a>
+      <a href="javascript:history.back()" class="btn btn-secondary">Go Back</a>
+    </div>
+  </div>
+</div>
+
+<style>
+  .error-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: calc(100vh - 120px);
+    padding: 2rem;
+  }
+  
+  .error-content {
+    text-align: center;
+    max-width: 500px;
+  }
+  
+  .error-icon {
+    color: var(--danger);
+    margin-bottom: 2rem;
+  }
+  
+  .error-code {
+    font-size: 4rem;
+    font-weight: 700;
+    margin: 0 0 0.5rem 0;
+    color: var(--text);
+  }
+  
+  .error-message {
+    font-size: 1.5rem;
+    margin: 0 0 1rem 0;
+    color: var(--text-dim);
+  }
+  
+  .error-description {
+    color: var(--text-faint);
+    margin-bottom: 2rem;
+  }
+  
+  .error-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+  }
+  
+  .btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--radius);
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    display: inline-block;
+  }
+  
+  .btn-primary {
+    background: var(--accent);
+    color: var(--accent-contrast);
+  }
+  
+  .btn-primary:hover {
+    background: var(--accent-hover);
+  }
+  
+  .btn-secondary {
+    background: var(--surface-alt);
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+  
+  .btn-secondary:hover {
+    background: var(--surface-sunken);
+  }
+</style>
+{% endblock %}

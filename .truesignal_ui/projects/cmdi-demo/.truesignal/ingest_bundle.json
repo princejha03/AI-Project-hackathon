@@ -1,0 +1,28 @@
+{
+  "project": "cmdi-demo",
+  "methods_indexed": 4,
+  "baseline_findings": 2,
+  "triage_decisions": 4,
+  "candidates": [
+    {
+      "qualified_name": "FormatValidator.clean",
+      "hypothesis": "sanitizer",
+      "findings": [
+        "CX-1002"
+      ],
+      "dismissal_count": 4
+    },
+    {
+      "qualified_name": "ReportServlet.generateReport",
+      "hypothesis": "source",
+      "findings": [],
+      "dismissal_count": 0
+    },
+    {
+      "qualified_name": "ReportServlet.generateRaw",
+      "hypothesis": "source",
+      "findings": [],
+      "dismissal_count": 0
+    }
+  ]
+}

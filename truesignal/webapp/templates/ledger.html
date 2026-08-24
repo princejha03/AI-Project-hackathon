@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% from "_tabs.html" import project_tabs %}
+{% block title %}Ledger - {{ meta.name }}{% endblock %}
+{% block subnav %}{{ project_tabs(pid, meta, 'ledger') }}{% endblock %}
+{% block content %}
+  <div class="page-head">
+    <div>
+      <h1>Ledger</h1>
+      <p class="subtitle">Append-only audit trail of every override TrueSignal has applied to (or rolled back from) {{ meta.name }}.</p>
+    </div>
+    <div class="actions">
+      <a class="btn" href="{{ url_for('export_ledger', pid=pid) }}">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 3v12m0 0-4-4m4 4 4-4M5 21h14" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Export JSON
+      </a>
+    </div>
+  </div>
+  <div class="grid-wrap">
+  <table class="grid">
+    <thead><tr><th>When</th><th>Event</th><th>Kind</th><th>Function</th><th>Confidence</th><th>Triage support</th><th></th></tr></thead>
+    <tbody>
+      {% for e in rows %}
+        {% set ov = e.override %}
+        <tr>
+          <td class="dim small">{{ e.timestamp[:19] }}</td>
+          <td><span class="pill pill-{{ 'downgraded' if e.event == 'applied' else 'warn' }}">{{ e.event }}</span></td>
+          <td><span class="pill pill-info">{{ ov.kind }}</span></td>
+          <td><code>{{ ov.function }}</code></td>
+          <td class="mono">{{ '%.2f'|format(ov.confidence) }}</td>
+          <td class="mono">{{ ov.evidence.triage_count }}</td>
+          <td>
+            {% if e.can_rollback and current_user_label == 'Admin' %}
+              <form method="post" action="{{ url_for('rollback', pid=pid) }}"
+                    onsubmit="return confirm('Roll back this override? Findings it affected return to their pre-override state.');">
+                <input type="hidden" name="name" value="{{ ov.name }}">
+                <button class="btn btn-small btn-danger" type="submit">Roll back</button>
+              </form>
+            {% elif e.can_rollback %}
+              <span class="faint small" title="Admin only">Read-only</span>
+            {% endif %}
+          </td>
+        </tr>
+      {% else %}
+        <tr><td colspan="7">
+          <div class="empty-state">
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none"><path d="M9 6h11M9 12h11M9 18h11M4 6h.01M4 12h.01M4 18h.01" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+            <p>Ledger is empty &mdash; nothing applied yet.</p>
+          </div>
+        </td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  </div>
+{% endblock %}

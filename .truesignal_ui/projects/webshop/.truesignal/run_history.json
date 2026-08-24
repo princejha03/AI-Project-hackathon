@@ -1,0 +1,63 @@
+[
+  {
+    "project": "webshop",
+    "summary": "This run learned and applied 1 source (LegacyRequest.getParam) for sql_injection. A previously-hidden HIGH finding (CX-1009) surfaced via LegacyRequest.getParam() -> trim() -> OrderDao.query().",
+    "stats": {
+      "project": "webshop",
+      "overrides_applied": [
+        {
+          "function": "LegacyRequest.getParam",
+          "role": "source",
+          "confidence": 1.0,
+          "attack_class": "sql_injection"
+        }
+      ],
+      "findings_downgraded": 0,
+      "downgrade_reasons": [],
+      "new_findings": [
+        {
+          "id": "CX-1009",
+          "severity": "HIGH",
+          "taint_path": "LegacyRequest.getParam() -> trim() -> OrderDao.query()"
+        }
+      ],
+      "needs_review_count": 0
+    },
+    "timestamp": "2026-08-23T13:21:04.443229+00:00"
+  },
+  {
+    "project": "webshop",
+    "summary": "This run learned and applied 2 sanitizers (InputCleaner.sanitize, InputCleaner.sanitizeNumeric) for sql_injection. 7 finding(s) were downgraded to NOT_EXPLOITABLE: passes through verified sanitizer InputCleaner.sanitize(); passes through verified sanitizer InputCleaner.sanitizeNumeric(). A previously-hidden HIGH finding (CX-1009) surfaced via LegacyRequest.getParam() -> trim() -> OrderDao.query().",
+    "stats": {
+      "project": "webshop",
+      "overrides_applied": [
+        {
+          "function": "InputCleaner.sanitize",
+          "role": "sanitizer",
+          "confidence": 0.9,
+          "attack_class": "sql_injection"
+        },
+        {
+          "function": "InputCleaner.sanitizeNumeric",
+          "role": "sanitizer",
+          "confidence": 0.87,
+          "attack_class": "sql_injection"
+        }
+      ],
+      "findings_downgraded": 7,
+      "downgrade_reasons": [
+        "passes through verified sanitizer InputCleaner.sanitize()",
+        "passes through verified sanitizer InputCleaner.sanitizeNumeric()"
+      ],
+      "new_findings": [
+        {
+          "id": "CX-1009",
+          "severity": "HIGH",
+          "taint_path": "LegacyRequest.getParam() -> trim() -> OrderDao.query()"
+        }
+      ],
+      "needs_review_count": 0
+    },
+    "timestamp": "2026-08-24T08:59:34.040354+00:00"
+  }
+]
