@@ -20,6 +20,7 @@
     {% endif %}
     {% for e in pending %}
       <form method="post" class="learn-row">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <input type="hidden" name="example_id" value="{{ e.id }}">
         <div>
           <div class="item-head"><strong><code>{{ e.qualified_name }}()</code></strong>
@@ -55,6 +56,7 @@
   <div class="section-label">Add a manual example</div>
   <div class="card">
     <form method="post">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
       <input type="hidden" name="action" value="add_manual">
       <label class="small">Project
         <select name="project_id">

@@ -187,6 +187,70 @@
         esc(opts.label || "noise eliminated") + "</text></svg>";
   }
 
+  // Radar/spider chart: one spoke per category, one or more overlaid
+  // series (each pre-normalized to 0..1) -- the Attack Surface Radar on
+  // /analytics overlays "Open exposure" against "Learned coverage" on the
+  // same six attack-class spokes, so the gap between the two polygons on
+  // any spoke *is* the finding: exposed but not yet understood.
+  function radarSVG(categories, series, opts) {
+    opts = opts || {};
+    if (!categories || !categories.length) {
+      return '<p class="faint small">No attack-class data yet.</p>';
+    }
+    var size = opts.size || 320, pad = opts.pad || 54;
+    var cx = size / 2, cy = size / 2, r = (size - pad * 2) / 2;
+    var n = categories.length;
+    var rings = opts.rings || 4;
+
+    function point(i, frac) {
+      var angle = -Math.PI / 2 + (i * 2 * Math.PI) / n;
+      return [cx + r * frac * Math.cos(angle), cy + r * frac * Math.sin(angle)];
+    }
+
+    var gridPolys = "";
+    for (var ring = 1; ring <= rings; ring++) {
+      var frac = ring / rings;
+      var pts = categories.map(function (_, i) { return point(i, frac).join(","); }).join(" ");
+      gridPolys += '<polygon points="' + pts + '" class="chart-radar-grid"></polygon>';
+    }
+    var spokes = categories.map(function (_, i) {
+      var p = point(i, 1);
+      return '<line x1="' + cx + '" y1="' + cy + '" x2="' + p[0] + '" y2="' + p[1] + '" class="chart-radar-spoke"></line>';
+    }).join("");
+    var labels = categories.map(function (cat, i) {
+      var p = point(i, 1.16);
+      var anchor = Math.abs(p[0] - cx) < 4 ? "middle" : (p[0] > cx ? "start" : "end");
+      return '<text x="' + p[0] + '" y="' + p[1] + '" text-anchor="' + anchor +
+        '" class="chart-radar-label">' + esc(cat.label) + "</text>";
+    }).join("");
+
+    var seriesSVG = (series || []).map(function (s) {
+      var pts = categories.map(function (cat, i) {
+        return point(i, Math.max(0, Math.min(1, s.values[cat.key] || 0)));
+      });
+      var poly = pts.map(function (p) { return p.join(","); }).join(" ");
+      var dots = pts.map(function (p, i) {
+        var cat = categories[i];
+        var raw = s.raw ? s.raw[cat.key] : s.values[cat.key];
+        return '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="3" fill="' + color(s.colorKey) + '">' +
+          "<title>" + esc(s.label) + " · " + esc(cat.label) + ": " + esc(String(raw)) + "</title></circle>";
+      }).join("");
+      return '<polygon points="' + poly + '" fill="' + color(s.colorKey) + '" fill-opacity="0.16" stroke="' +
+        color(s.colorKey) + '" stroke-width="2" class="chart-radar-series"></polygon>' + dots;
+    }).join("");
+
+    return '<svg viewBox="0 0 ' + size + " " + size + '" width="100%" height="' + size +
+      '" preserveAspectRatio="xMidYMid meet" class="chart-radar">' +
+      gridPolys + spokes + seriesSVG + labels + "</svg>";
+  }
+
+  function radarLegendHTML(series) {
+    return '<ul class="chart-legend chart-radar-legend">' + (series || []).map(function (s) {
+      return '<li><span class="chart-swatch" style="background:' + color(s.colorKey) + '"></span>' +
+        '<span class="chart-legend-label">' + esc(s.label) + "</span></li>";
+    }).join("") + "</ul>";
+  }
+
   var registry = [];
 
   function renderOne(entry) {
@@ -203,6 +267,10 @@
       el.innerHTML = trendSVG(entry.data.points, entry.data.opts);
     } else if (entry.type === "signed-trend") {
       el.innerHTML = signedTrendSVG(entry.data.points, entry.data.opts);
+    } else if (entry.type === "radar") {
+      el.innerHTML = '<div class="chart-radar-row">' +
+        radarSVG(entry.data.categories, entry.data.series, entry.data.opts) +
+        radarLegendHTML(entry.data.series) + "</div>";
     } else if (entry.type === "gauge") {
       el.innerHTML = gaugeSVG(entry.data.pct, entry.data.opts);
       var fill = el.querySelector(".gauge-fill");

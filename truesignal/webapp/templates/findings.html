@@ -43,6 +43,7 @@
     </div>
   {% endif %}
   <form id="bulk-form" method="post" action="{{ url_for('bulk_audit', pid=pid) }}" {% if not rows %}hidden{% endif %}>
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     <div class="grid-wrap">
     <table class="grid" id="findings-table">
       <thead>

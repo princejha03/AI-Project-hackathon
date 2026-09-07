@@ -26,6 +26,7 @@
       </p>
     {% endif %}
     <form method="post">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
       <label>Confidence floor (0.00&ndash;1.00)
         <input type="text" name="min_confidence_auto" value="{{ '%.2f'|format(min_confidence_auto) }}" inputmode="decimal" {{ 'disabled' if read_only }}>
       </label>
@@ -74,6 +75,7 @@
       <p class="small dim" style="margin-bottom:0">This project currently overrides the defaults above.</p>
       {% if current_user_label == 'Admin' %}
       <form method="post" style="margin-top:10px">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <input type="hidden" name="reset" value="1">
         <button class="btn btn-small" type="submit">Reset to defaults</button>
       </form>

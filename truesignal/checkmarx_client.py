@@ -239,20 +239,15 @@ class MockCheckmarxClient(BaseCheckmarxClient):
         sanitizers = {o["function"] for o in applied if o["kind"] == "sanitizer"}
         sources = {o["function"] for o in applied if o["kind"] == "source"}
 
+        sanitizer_bare = {s.split("(")[0] for s in sanitizers}
         results = []
         for f in baseline["results"]:
-            on_path = {step["node"].split("(")[0] for step in f["taintPath"]}
-            if any(s.split("(")[0] in on_path or any(s.startswith(n.rsplit(".", 1)[0]) for n in on_path)
-                   for s in sanitizers) and any(
-                    step["node"].split("(")[0] in {s.split("(")[0] for s in sanitizers}
-                    for step in f["taintPath"]):
+            sanitizing_step = next(
+                (step for step in f["taintPath"] if step["node"].split("(")[0] in sanitizer_bare), None)
+            if sanitizing_step is not None:
                 f = dict(f)
                 f["state"] = "NOT_EXPLOITABLE"
-                f["downgradeReason"] = (
-                    "passes through verified sanitizer "
-                    + next(step["node"] for step in f["taintPath"]
-                           if step["node"].split("(")[0] in {s.split("(")[0] for s in sanitizers})
-                )
+                f["downgradeReason"] = f"passes through verified sanitizer {sanitizing_step['node']}"
             results.append(f)
 
         if any(s.startswith("LegacyRequest.getParam") for s in sources):

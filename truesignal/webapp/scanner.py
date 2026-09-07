@@ -14,10 +14,10 @@ a second method to keep chasing a source) — that is what keeps a wrapper
 class like LegacyRequest.getParam() invisible until its bare name is added
 to learned_sources, mirroring why real engines miss it too.
 
-Recognizes more than one vulnerability class: SQL Injection (the CLI demo's
-class) and Command Injection, each with its own literal sink names and
-CxQL-style query name, so the same trace logic below is shared across
-classes instead of being SQL-specific.
+Recognizes many vulnerability classes -- SQL/Command/LDAP Injection, SSRF,
+Path Traversal, XSS and the web UI's broader demo taxonomy below -- each
+with its own literal sink names and CxQL-style query name, so the same
+trace logic is shared across classes instead of being SQL-specific.
 """
 from __future__ import annotations
 
@@ -55,6 +55,22 @@ _SINK_CLASSES: dict[str, tuple[str, str]] = {
     "postForEntity": ("ssrf", "SSRF"),
     "openConnection": ("ssrf", "SSRF"),
     "searchDirectory": ("ldap_injection", "LDAP_Injection"),
+    # Additions backing the web UI's built-in demo projects (see
+    # comment_bank.ATTACK_CLASSES for the full taxonomy they belong to).
+    "applyAccountChange": ("csrf", "CSRF"),
+    "persistCredential": ("insufficiently_protected_credentials", "Insufficiently_Protected_Credentials"),
+    "finalizeResponseWithoutHsts": ("missing_hsts_header", "Missing_HSTS_Header"),
+    "exportProfileData": ("privacy_violation", "Privacy_Violation"),
+    "writeAuditLog": ("log_forging", "Log_Forging"),
+    "storeInSession": ("trust_boundary_violation", "Trust_Boundary_Violation_Session_Variable"),
+    "cacheInMemory": ("heap_inspection", "Heap_Inspection"),
+    "renderLegacyWidget": ("client_jquery_deprecated_symbols", "Client_JQuery_Deprecated_Symbols"),
+    "redirectTo": ("open_redirect", "Open_Redirect"),
+    "finalizeResponseWithoutCsp": ("missing_csp_header", "Missing_CSP_Header"),
+    "renderExternalLink": ("unsafe_target_blank", "Unsafe_Target_Blank"),
+    "loadClientScript": ("client_dangerous_file_inclusion", "Client_Dangerous_File_Inclusion"),
+    "parseUntrustedXml": ("xxe", "Improper_Restriction_Of_XXE_Reflection"),
+    "encryptWithLegacyCipher": ("risky_cryptographic_algorithm", "Use_Of_Broken_Or_Risky_Cryptographic_Algorithm"),
 }
 
 

@@ -94,8 +94,8 @@
   
   <h3>Export Findings</h3>
   <pre class="snippet">GET /projects/&lt;pid&gt;/export/findings.json
-GET /projects/&lt;pid&gt;/export/findings.json?format=csv</pre>
-  
+GET /api/projects/&lt;pid&gt;/findings/export?format=csv&amp;severity=CRITICAL,HIGH&amp;state=TO_VERIFY</pre>
+
   <h3>Project Statistics</h3>
   <pre class="snippet">GET /api/projects/&lt;pid&gt;/statistics</pre>
   

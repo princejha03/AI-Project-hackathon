@@ -9,6 +9,7 @@
     triaging from — nothing is fabricated for a real upload.
   </p>
   <form class="card" method="post" enctype="multipart/form-data">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     <label>Project name
       <input type="text" name="name" required placeholder="e.g. checkout-service">
     </label>

@@ -26,10 +26,15 @@
 
       const toast = document.createElement('div');
       toast.className = `toast ${type}`;
-      toast.innerHTML = `
-        <span>${message}</span>
-        <button class="toast-close" aria-label="Close">&times;</button>
-      `;
+
+      const text = document.createElement('span');
+      text.textContent = message;
+      const closeBtn = document.createElement('button');
+      closeBtn.className = 'toast-close';
+      closeBtn.setAttribute('aria-label', 'Close');
+      closeBtn.innerHTML = '&times;';
+      toast.appendChild(text);
+      toast.appendChild(closeBtn);
 
       this.container.appendChild(toast);
 
@@ -42,7 +47,6 @@
         toast.addEventListener('animationend', () => toast.remove(), { once: true });
       };
 
-      const closeBtn = toast.querySelector('.toast-close');
       closeBtn.addEventListener('click', remove);
 
       const autoDismiss = duration > 0 ? setTimeout(remove, duration) : null;
@@ -214,6 +218,58 @@
     }
   };
 
+  // Predefined-comment picker (audit page): "Browse comment bank" opens the
+  // picker as a real separate page/tab (comment_bank_picker.html), not a
+  // modal, so a reviewer can keep the audit page open side by side. Picking
+  // a comment there posts it back to this window and closes itself; this
+  // listener applies it to the audit comment textarea and syncs the
+  // decision select, so a "confirmed" canned comment can't end up saved
+  // under a mismatched decision. A no-op on any page without the picker.
+  const CommentBankPicker = {
+    MESSAGE_TYPE: 'truesignal-comment-bank-selection',
+
+    init() {
+      const openLink = document.getElementById('open-comment-bank-btn');
+      if (!openLink) return;
+
+      const textarea = document.getElementById('comment-textarea');
+      const decision = document.querySelector('select[name="decision"]');
+      const selectedLabel = document.getElementById('comment-bank-selected');
+
+      window.addEventListener('message', (event) => {
+        if (event.origin !== window.location.origin) return;
+        const data = event.data;
+        if (!data || data.type !== CommentBankPicker.MESSAGE_TYPE) return;
+        if (textarea) textarea.value = data.text;
+        if (decision && data.decision) decision.value = data.decision;
+        if (selectedLabel) selectedLabel.textContent = 'Selected: ' + data.label;
+      });
+    }
+  };
+
+  // Comment-bank picker page itself (comment_bank_picker.html): clicking
+  // "Use this comment" hands the comment back to the audit tab that opened
+  // this page via window.opener, then closes this tab. A no-op on any page
+  // without these buttons (i.e. everywhere except that page).
+  const CommentBankBrowsePage = {
+    init() {
+      const buttons = document.querySelectorAll('.comment-bank-use-btn');
+      if (!buttons.length || !window.opener) return;
+
+      buttons.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          window.opener.postMessage({
+            type: CommentBankPicker.MESSAGE_TYPE,
+            text: btn.dataset.text,
+            decision: btn.dataset.decision,
+            label: btn.dataset.label
+          }, window.location.origin);
+          window.close();
+        });
+      });
+    }
+  };
+
   // Export to global
   window.TrueSignal = {
     Toast,
@@ -221,12 +277,16 @@
     API,
     Clipboard,
     Format,
-    FlowGraph
+    FlowGraph,
+    CommentBankPicker,
+    CommentBankBrowsePage
   };
 
   // Initialize on DOM ready
   document.addEventListener('DOMContentLoaded', () => {
     Toast.init();
     FlowGraph.init();
+    CommentBankPicker.init();
+    CommentBankBrowsePage.init();
   });
 })();

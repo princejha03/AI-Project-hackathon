@@ -10,20 +10,30 @@ Run with `python -m truesignal.webapp.server` (see run_ui.bat).
 """
 from __future__ import annotations
 
+import csv
 import logging
 import os
 import secrets
+import time
 import webbrowser
+from collections import defaultdict
 from datetime import datetime
 from functools import wraps
+from io import StringIO
 from pathlib import Path
 from threading import Timer
 
+import requests
 from flask import Flask, abort, flash, jsonify, redirect, render_template, request, session, url_for
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from ..code_indexer import index_repo
-from ..config import default_thresholds
+from ..comment_bank import ATTACK_CLASSES as COMMENT_ATTACK_CLASSES
+from ..comment_bank import LANGUAGES as COMMENT_LANGUAGES
+from ..comment_bank import RESOLUTIONS as COMMENT_RESOLUTIONS
+from ..comment_bank import CommentBank
+from ..config import default_thresholds, load_config
+from ..cxql_assistant import answer_question
 from ..feedback import FeedbackStore
 from ..llm_classifier import build_user_prompt
 from ..override_generator import Ledger
@@ -72,10 +82,21 @@ def create_app() -> Flask:
         return render_template("error.html", code=413,
                                 message=f"That file is too large (limit {max_mb} MB)"), 413
 
+    @app.after_request
+    def add_security_headers(response):
+        response.headers.setdefault("X-Content-Type-Options", "nosniff")
+        response.headers.setdefault("X-Frame-Options", "DENY")
+        response.headers.setdefault("Referrer-Policy", "same-origin")
+        return response
+
     return app
 
 app = create_app()
 store = ProjectStore()
+# CxQL syntax help is project-agnostic (just which LLM backend to use, if any),
+# so one shared config is enough -- unlike store.config_for(pid), which is
+# per-project.
+_assistant_cfg = load_config()
 
 # --- auth: two demo accounts gate the app; override via env for anything real ---
 DEMO_ACCOUNTS = [
@@ -94,6 +115,10 @@ DEMO_ACCOUNTS = [
 ]
 ACCOUNTS = {a["username"]: generate_password_hash(a["password"]) for a in DEMO_ACCOUNTS}
 ACCOUNT_LABELS = {a["username"]: a["label"] for a in DEMO_ACCOUNTS}
+
+
+def _is_admin(username: str | None) -> bool:
+    return username is not None and username == os.environ.get("TRUESIGNAL_ADMIN_USER", "admin")
 
 
 @app.context_processor
@@ -118,10 +143,64 @@ def admin_required(view):
     can approve, edit, or discard them."""
     @wraps(view)
     def wrapped(*args, **kwargs):
-        if session.get("user") != os.environ.get("TRUESIGNAL_ADMIN_USER", "admin"):
+        if not _is_admin(session.get("user")):
             abort(403)
         return view(*args, **kwargs)
     return wrapped
+
+
+# --- CSRF: every state-changing request must carry the token minted into its
+# own session. Homegrown instead of a new dependency (Flask-WTF) -- the same
+# "no more machinery than the problem needs" spirit as the rest of this
+# project's static heuristics (see pattern_library.py, cxql_kb.py). ---
+_CSRF_SESSION_KEY = "_csrf_token"
+_CSRF_EXEMPT_ENDPOINTS = {"api_assistant_chat"}  # reads/answers only, never mutates persisted state
+
+
+def _csrf_token() -> str:
+    token = session.get(_CSRF_SESSION_KEY)
+    if not token:
+        token = secrets.token_hex(32)
+        session[_CSRF_SESSION_KEY] = token
+    return token
+
+
+@app.context_processor
+def inject_csrf_token():
+    return {"csrf_token": _csrf_token}
+
+
+@app.before_request
+def _enforce_csrf():
+    if request.method not in ("POST", "PUT", "PATCH", "DELETE"):
+        return None
+    if request.endpoint in _CSRF_EXEMPT_ENDPOINTS:
+        return None
+    expected = session.get(_CSRF_SESSION_KEY)
+    submitted = request.form.get("csrf_token") or request.headers.get("X-CSRFToken")
+    if not expected or not submitted or not secrets.compare_digest(expected, submitted):
+        abort(400, description="Missing or invalid CSRF token.")
+    return None
+
+
+# --- Login rate limiting: bounded, in-memory, per (client IP, username) --
+# not persisted, not distributed -- this is a single-process demo server, and
+# the goal is only to blunt an unattended brute-force script, not to replace
+# a real WAF/identity provider in front of a production deployment. ---
+_LOGIN_ATTEMPT_WINDOW_SECONDS = 300
+_LOGIN_ATTEMPT_LIMIT = 10
+_login_attempts: dict[str, list[float]] = defaultdict(list)
+
+
+def _login_rate_limited(key: str) -> bool:
+    now = time.time()
+    attempts = [t for t in _login_attempts[key] if now - t < _LOGIN_ATTEMPT_WINDOW_SECONDS]
+    _login_attempts[key] = attempts
+    return len(attempts) >= _LOGIN_ATTEMPT_LIMIT
+
+
+def _record_login_attempt(key: str) -> None:
+    _login_attempts[key].append(time.time())
 
 
 def _safe_next(target: str | None) -> str:
@@ -216,6 +295,10 @@ DECISION_MAP = {
     "proposed_not_exploitable": ("DISMISS", "PROPOSED_NOT_EXPLOITABLE"),
     "to_verify": ("TO_VERIFY", "TO_VERIFY"),
 }
+# Inverse of DECISION_MAP's resolution half -- lets picking a predefined comment
+# (tagged with a resolution) also switch the audit form's decision dropdown to
+# match, so a "confirmed" canned comment can't get saved under "to verify".
+DECISION_BY_RESOLUTION = {resolution: decision for decision, (_action, resolution) in DECISION_MAP.items()}
 
 STATE_CHART_LABELS = {
     "TO_VERIFY": ("To verify", "warning"), "NOT_EXPLOITABLE": ("Not exploitable", "success"),
@@ -229,11 +312,81 @@ RESOLUTION_CHART_LABELS = {
 KIND_CHART_LABELS = {
     "sanitizer": ("Sanitizer", "info"), "source": ("Source", "danger"), "sink": ("Sink", "warning"),
 }
+SEVERITY_CHART_LABELS = {
+    "CRITICAL": ("Critical", "critical"), "HIGH": ("High", "high"),
+    "MEDIUM": ("Medium", "medium"), "LOW": ("Low", "low"), "INFO": ("Info", "info"),
+}
 
 
 def _chart_segments(counts: dict, labels: dict) -> list[dict]:
     return [{"label": labels.get(k, (k, "faint"))[0], "value": v, "colorKey": labels.get(k, (k, "faint"))[1]}
             for k, v in sorted(counts.items())]
+
+
+def _attack_class_hint(query_name: str) -> str | None:
+    """Best-guess attack class for a finding's query name (e.g. "SQL_Injection",
+    "XSS_Reflected") so the comment-bank picker can surface likely-relevant
+    comments first -- advisory only, the picker still shows every comment."""
+    q = (query_name or "").lower()
+    return next((ac for ac in COMMENT_ATTACK_CLASSES if ac in q), None)
+
+
+def _org_wide_analytics() -> dict:
+    """One pass over every project for the /analytics view: severity/state
+    breakdowns for the existing donut charts, plus the data behind the
+    Attack Surface Radar -- per attack class, how much *open* exposure this
+    org still carries (live, non-downgraded findings) against how much of
+    that class TrueSignal has actually learned and applied overrides for
+    (the average confidence of every currently-applied override in that
+    class). Two overlaid polygons on the same six spokes: where exposure
+    outruns coverage is exactly where a reviewer's next audit pass should
+    start.
+    """
+    severity_counts: dict[str, int] = {}
+    state_counts: dict[str, int] = {}
+    exposure = dict.fromkeys(COMMENT_ATTACK_CLASSES, 0)
+    confidence_sum = dict.fromkeys(COMMENT_ATTACK_CLASSES, 0.0)
+    confidence_n = dict.fromkeys(COMMENT_ATTACK_CLASSES, 0)
+
+    for p in store.list_projects():
+        pid = p["id"]
+        for f in _project_impact(pid)["current_results"]:
+            severity = f.get("severity", "INFO")
+            state = f.get("state", "TO_VERIFY")
+            severity_counts[severity] = severity_counts.get(severity, 0) + 1
+            state_counts[state] = state_counts.get(state, 0) + 1
+            if state != "NOT_EXPLOITABLE":
+                attack_class = _attack_class_hint(f.get("queryName"))
+                if attack_class in exposure:
+                    exposure[attack_class] += 1
+        for override in Ledger(store.config_for(pid).state_dir).applied_overrides().values():
+            attack_class = override.get("attackClass")
+            if attack_class in confidence_sum:
+                confidence_sum[attack_class] += override.get("confidence", 0.0)
+                confidence_n[attack_class] += 1
+
+    max_exposure = max(exposure.values(), default=0) or 1
+    radar_chart = {
+        "categories": [{"key": ac, "label": ac.replace("_", " ").title()} for ac in COMMENT_ATTACK_CLASSES],
+        "series": [
+            {
+                "label": "Open exposure", "colorKey": "danger",
+                "values": {ac: exposure[ac] / max_exposure for ac in COMMENT_ATTACK_CLASSES},
+                "raw": exposure,
+            },
+            {
+                "label": "Learned coverage", "colorKey": "success",
+                "values": {ac: (confidence_sum[ac] / confidence_n[ac]) if confidence_n[ac] else 0.0
+                           for ac in COMMENT_ATTACK_CLASSES},
+                "raw": {ac: confidence_n[ac] for ac in COMMENT_ATTACK_CLASSES},
+            },
+        ],
+    }
+    return {
+        "severity_chart": _chart_segments(severity_counts, SEVERITY_CHART_LABELS),
+        "state_chart": _chart_segments(state_counts, STATE_CHART_LABELS),
+        "radar_chart": radar_chart,
+    }
 
 
 def _resolve_node(node: str, methods: dict) -> dict | None:
@@ -242,6 +395,19 @@ def _resolve_node(node: str, methods: dict) -> dict | None:
     if m is None:
         bare = qname.rsplit(".", 1)[-1]
         m = next((v for v in methods.values() if v.method_name == bare), None)
+    if m is None:
+        return None
+    return {"qualified_name": m.qualified_name, "file": m.file, "line": m.line, "source": m.source}
+
+
+def _resolve_flow_method(finding: dict, methods: dict) -> dict | None:
+    """The single method that holds this finding's whole source-to-sink flow
+    (every taintPath step reports this method's own file/line, per
+    scan_methods) -- a reviewer verifying exploitability needs to see source
+    and sink *together*, in the surrounding logic, not just two isolated
+    one-line definitions."""
+    m = next((v for v in methods.values()
+              if v.file == finding.get("sourceFile") and v.line == finding.get("sourceLine")), None)
     if m is None:
         return None
     return {"qualified_name": m.qualified_name, "file": m.file, "line": m.line, "source": m.source}
@@ -295,11 +461,16 @@ def login():
     if request.method == "POST":
         username = request.form.get("username", "").strip()
         password = request.form.get("password", "")
-        stored_hash = ACCOUNTS.get(username)
-        if stored_hash and check_password_hash(stored_hash, password):
-            session["user"] = username
-            return redirect(_safe_next(request.form.get("next")))
-        error = "Invalid username or password."
+        rate_key = f"{request.remote_addr}:{username.lower()}"
+        if _login_rate_limited(rate_key):
+            error = "Too many attempts. Wait a few minutes and try again."
+        else:
+            stored_hash = ACCOUNTS.get(username)
+            if stored_hash and check_password_hash(stored_hash, password):
+                session["user"] = username
+                return redirect(_safe_next(request.form.get("next")))
+            _record_login_attempt(rate_key)
+            error = "Invalid username or password."
     return render_template("login.html", error=error, next=next_url, demo_accounts=DEMO_ACCOUNTS)
 
 
@@ -494,10 +665,57 @@ def audit(pid, fid):
 
     methods = _methods_for(pid)
     path = [{**step, "resolved": _resolve_node(step["node"], methods)} for step in finding["taintPath"]]
+    flow_method = _resolve_flow_method(finding, methods)
     triage = store.get_triage(pid)
     history = [d for d in triage["decisions"] if d["findingId"] == fid]
+    assistant_context = {
+        "pid": pid, "finding_id": fid, "query_name": finding.get("queryName"),
+        "severity": finding.get("severity"),
+        "taint_functions": [step["resolved"]["qualified_name"] for step in path if step.get("resolved")],
+    }
     return render_template("audit.html", pid=pid, finding=finding, path=path, history=history,
-                            default_user=session.get("last_user", ""), suggestion=suggest_verdict(path))
+                            flow_method=flow_method,
+                            default_user=session.get("last_user", ""), suggestion=suggest_verdict(path),
+                            assistant_context=assistant_context, comment_options=CommentBank().list(),
+                            attack_class_hint=_attack_class_hint(finding.get("queryName")),
+                            decision_by_resolution=DECISION_BY_RESOLUTION)
+
+
+@app.route("/projects/<pid>/findings/<fid>/comment-bank")
+@login_required
+def comment_bank_picker(pid, fid):
+    """A real page (opened in its own tab from the audit page's "Browse
+    comment bank" button) to search/filter the comment bank by language,
+    attack class, and label/text -- deliberately not a modal, so a reviewer
+    can keep the audit page open side by side while they look. Selecting a
+    comment here posts it back to that audit tab via window.opener and
+    closes itself; see comment_bank_picker.html for the JS side."""
+    if not store.exists(pid):
+        abort(404)
+    current_results = _project_impact(pid)["current_results"]
+    finding = next((f for f in current_results if f["id"] == fid), None)
+    if finding is None:
+        abort(404)
+
+    q = request.args.get("q", "").strip()
+    attack_class = request.args.get("attack_class", "")
+    language = request.args.get("language", "")
+
+    comments = CommentBank().list(attack_class=attack_class or None, language=language or None)
+    if q:
+        needle = q.lower()
+        comments = [c for c in comments
+                    if needle in c["label"].lower() or needle in c["text"].lower()
+                    or needle in c["attack_class"].lower()]
+
+    attack_class_hint = _attack_class_hint(finding.get("queryName"))
+    comments.sort(key=lambda c: (c["attack_class"] != attack_class_hint, c["attack_class"], c["label"]))
+
+    return render_template("comment_bank_picker.html", pid=pid, fid=fid, finding=finding,
+                            comments=comments, attack_classes=COMMENT_ATTACK_CLASSES,
+                            languages=COMMENT_LANGUAGES, attack_class_hint=attack_class_hint,
+                            decision_by_resolution=DECISION_BY_RESOLUTION,
+                            selected_q=q, selected_attack_class=attack_class, selected_language=language)
 
 
 @app.route("/projects/<pid>/analyze", methods=["GET", "POST"])
@@ -680,7 +898,7 @@ def activity():
 @login_required
 def analytics():
     """Advanced analytics and reporting view."""
-    return render_template("analytics.html")
+    return render_template("analytics.html", **_org_wide_analytics())
 
 
 @app.route("/help")
@@ -708,7 +926,7 @@ def project_settings(pid):
     if request.method == "POST":
         # GET stays open so AppSec's documented "read-only on settings" access is
         # real, not just a hidden save button -- only the write path is admin-only.
-        if session.get("user") != os.environ.get("TRUESIGNAL_ADMIN_USER", "admin"):
+        if not _is_admin(session.get("user")):
             abort(403)
         if request.form.get("reset") == "1":
             store.save_settings(pid, None, None)
@@ -749,6 +967,48 @@ def rollback(pid):
     except ValueError as e:
         flash(str(e), "error")
     return redirect(url_for("ledger_view", pid=pid))
+
+
+@app.route("/admin/comments", methods=["GET", "POST"])
+@login_required
+@admin_required
+def comment_bank_admin():
+    """Admin-only curation of the predefined comment bank -- reviewers can
+    pick these on the audit page (see audit()'s comment_options) instead of
+    the heuristic AI-suggestion text. Authoring here *is* the verification
+    step (no pending/approve gate), same trust model as training()'s
+    add_manual branch below."""
+    bank = CommentBank()
+
+    if request.method == "POST":
+        action = request.form.get("action", "")
+        if action == "add":
+            label = request.form.get("label", "").strip()
+            text = request.form.get("text", "").strip()
+            if not label or not text:
+                flash("A short label and the comment text are both required.", "error")
+            else:
+                try:
+                    bank.add(attack_class=request.form.get("attack_class", ""),
+                             resolution=request.form.get("resolution", ""),
+                             language=request.form.get("language", ""),
+                             label=label, text=text, admin=session.get("user", "admin"))
+                    flash("Comment added to the bank.", "success")
+                except ValueError as e:
+                    flash(str(e), "error")
+        elif action == "delete":
+            try:
+                bank.delete(request.form.get("comment_id", ""))
+                flash("Comment removed.", "success")
+            except ValueError as e:
+                flash(str(e), "error")
+        else:
+            abort(400)
+        return redirect(url_for("comment_bank_admin"))
+
+    return render_template("comment_bank.html", comments=bank.list(),
+                            attack_classes=COMMENT_ATTACK_CLASSES, resolutions=COMMENT_RESOLUTIONS,
+                            languages=COMMENT_LANGUAGES)
 
 
 @app.route("/training", methods=["GET", "POST"])
@@ -823,248 +1083,192 @@ def training():
     )
 
 
-# ===== NEW FEATURES =====
-
 @app.route("/api/projects/<pid>/statistics")
 @login_required
 def api_project_statistics(pid):
-    """Get detailed statistics for a project."""
+    """Severity/state/query breakdowns for a project, for the analytics view
+    and anything scripting against this app's read-only JSON API."""
     if not store.exists(pid):
         abort(404)
-    
-    try:
-        meta = store.meta(pid)
-        impact = _project_impact(pid)
-        current_results = impact.pop("current_results")
-        
-        # Severity breakdown
-        severity_counts = {}
-        for f in current_results:
-            sev = f.get("severity", "INFO")
-            severity_counts[sev] = severity_counts.get(sev, 0) + 1
-        
-        # State breakdown
-        state_counts = {}
-        for f in current_results:
-            state = f.get("state", "TO_VERIFY")
-            state_counts[state] = state_counts.get(state, 0) + 1
-        
-        # Query breakdown
-        query_counts = {}
-        for f in current_results:
-            query = f.get("queryName", "Unknown")
-            query_counts[query] = query_counts.get(query, 0) + 1
-        
-        cfg = store.config_for(pid)
-        ledger = Ledger(cfg.state_dir)
-        currently_applied = ledger.already_learned()
-        
-        return jsonify({
-            "project_id": pid,
-            "project_name": meta.get("name", pid),
-            "total_findings": len(current_results),
-            "severity_breakdown": severity_counts,
-            "state_breakdown": state_counts,
-            "query_breakdown": query_counts,
-            "impact": impact,
-            "overrides_applied": len(currently_applied),
-            "timestamp": datetime.now().isoformat()
-        })
-    except Exception as e:
-        logger.error(f"Error getting statistics for {pid}: {str(e)}")
-        abort(500)
+
+    meta = store.meta(pid)
+    impact = _project_impact(pid)
+    current_results = impact.pop("current_results")
+
+    severity_counts: dict[str, int] = {}
+    state_counts: dict[str, int] = {}
+    query_counts: dict[str, int] = {}
+    for f in current_results:
+        severity_counts[f.get("severity", "INFO")] = severity_counts.get(f.get("severity", "INFO"), 0) + 1
+        state_counts[f.get("state", "TO_VERIFY")] = state_counts.get(f.get("state", "TO_VERIFY"), 0) + 1
+        query_counts[f.get("queryName", "Unknown")] = query_counts.get(f.get("queryName", "Unknown"), 0) + 1
+
+    currently_applied = Ledger(store.config_for(pid).state_dir).already_learned()
+
+    return jsonify({
+        "project_id": pid,
+        "project_name": meta.get("name", pid),
+        "total_findings": len(current_results),
+        "severity_breakdown": severity_counts,
+        "state_breakdown": state_counts,
+        "query_breakdown": query_counts,
+        "impact": impact,
+        "overrides_applied": len(currently_applied),
+        "timestamp": datetime.now().isoformat(),
+    })
 
 
 @app.route("/api/projects/<pid>/findings/export")
 @login_required
 def api_export_findings_advanced(pid):
-    """Export findings with advanced filtering options."""
+    """Findings export with severity/state filters and an optional CSV format,
+    for anything that needs more than the plain JSON dump at
+    /projects/<pid>/export/findings.json."""
     if not store.exists(pid):
         abort(404)
-    
-    try:
-        # Get query parameters for filtering
-        raw_severity = request.args.get("severity")
-        severity_filter = raw_severity.split(",") if raw_severity else None
-        raw_state = request.args.get("state")
-        state_filter = raw_state.split(",") if raw_state else None
 
-        results = _project_impact(pid)["current_results"]
-        
-        # Apply filters
-        if severity_filter:
-            results = [f for f in results if f.get("severity") in severity_filter]
-        if state_filter:
-            results = [f for f in results if f.get("state") in state_filter]
-        
-        # Get triage info
-        triage = store.get_triage(pid)
-        by_finding = {}
-        for d in triage["decisions"]:
-            by_finding.setdefault(d["findingId"], []).append(d)
-        
-        # Enrich results with triage info
+    severity_filter = request.args.get("severity", "").split(",") if request.args.get("severity") else None
+    state_filter = request.args.get("state", "").split(",") if request.args.get("state") else None
+
+    results = _project_impact(pid)["current_results"]
+    if severity_filter:
+        results = [f for f in results if f.get("severity") in severity_filter]
+    if state_filter:
+        results = [f for f in results if f.get("state") in state_filter]
+
+    by_finding: dict[str, list[dict]] = {}
+    for d in store.get_triage(pid)["decisions"]:
+        by_finding.setdefault(d["findingId"], []).append(d)
+    for f in results:
+        f["audit_history"] = by_finding.get(f["id"], [])
+
+    if request.args.get("format", "json").lower() == "csv":
+        output = StringIO()
+        writer = csv.DictWriter(output, fieldnames=[
+            "id", "queryName", "severity", "state", "sourceFile", "sourceLine", "audit_count",
+        ])
+        writer.writeheader()
         for f in results:
-            f["audit_history"] = by_finding.get(f["id"], [])
-        
-        export_format = request.args.get("format", "json").lower()
-        
-        if export_format == "csv":
-            import csv
-            from io import StringIO
-            
-            output = StringIO()
-            if results:
-                writer = csv.DictWriter(output, fieldnames=[
-                    "id", "queryName", "severity", "state", "lines", "audit_count"
-                ])
-                writer.writeheader()
-                for f in results:
-                    writer.writerow({
-                        "id": f.get("id", ""),
-                        "queryName": f.get("queryName", ""),
-                        "severity": f.get("severity", ""),
-                        "state": f.get("state", ""),
-                        "lines": ",".join(str(line) for line in f.get("lines", [])),
-                        "audit_count": len(f.get("audit_history", []))
-                    })
-            return output.getvalue(), 200, {
-                "Content-Disposition": f"attachment; filename=findings-{pid}.csv",
-                "Content-Type": "text/csv"
-            }
-        else:  # JSON
-            return jsonify({
-                "project_id": pid,
-                "export_timestamp": datetime.now().isoformat(),
-                "count": len(results),
-                "findings": results
+            writer.writerow({
+                "id": f.get("id", ""),
+                "queryName": f.get("queryName", ""),
+                "severity": f.get("severity", ""),
+                "state": f.get("state", ""),
+                "sourceFile": f.get("sourceFile", ""),
+                "sourceLine": f.get("sourceLine", ""),
+                "audit_count": len(f.get("audit_history", [])),
             })
-    except Exception as e:
-        logger.error(f"Error exporting findings for {pid}: {str(e)}")
-        abort(500)
+        return output.getvalue(), 200, {
+            "Content-Disposition": f"attachment; filename=findings-{pid}.csv",
+            "Content-Type": "text/csv",
+        }
+
+    return jsonify({
+        "project_id": pid,
+        "export_timestamp": datetime.now().isoformat(),
+        "count": len(results),
+        "findings": results,
+    })
+
+
+_SEARCH_RESULT_LIMIT = 50
 
 
 @app.route("/api/search/findings")
 @login_required
 def api_search_findings():
-    """Advanced search across all projects' findings."""
+    """Keyword search across every project's findings, by query name, finding
+    ID, or severity."""
     query = request.args.get("q", "").lower()
     if not query or len(query) < 2:
         return jsonify({"results": []})
-    
-    try:
-        results = []
-        for project in store.list_projects():
-            pid = project["id"]
-            scan = store.get_scan(pid)
-            for finding in scan.get("results", []):
-                if (query in finding.get("queryName", "").lower() or
-                    query in finding.get("id", "").lower() or
-                    query in str(finding.get("severity", "")).lower()):
-                    results.append({
-                        "project_id": pid,
-                        "project_name": project.get("name"),
-                        "finding_id": finding.get("id"),
-                        "query": finding.get("queryName"),
-                        "severity": finding.get("severity"),
-                        "state": finding.get("state")
-                    })
-                    if len(results) >= 50:  # Limit results
-                        break
-            if len(results) >= 50:
-                break
-        return jsonify({"results": results})
-    except Exception as e:
-        logger.error(f"Error searching findings: {str(e)}")
-        return jsonify({"results": [], "error": "Search failed"}), 500
 
-
-# DECISION_MAP is keyed by the form's decision name; the JSON API instead takes the
-# target state directly, so invert it once: resolution -> (action, resolution).
-STATE_TO_DECISION = {resolution: (action, resolution) for action, resolution in DECISION_MAP.values()}
-
-
-@app.route("/api/projects/<pid>/bulk-operations", methods=["POST"])
-@login_required
-def api_bulk_operations(pid):
-    """Handle bulk operations on findings. Shares its persistence path with the
-    form-based /findings/bulk-audit route so both actually record the audit
-    (and, for CONFIRMED, the same sanitizer-bypass training capture) instead
-    of just reporting a count back."""
-    if not store.exists(pid):
-        abort(404)
-
-    try:
-        data = request.get_json()
-        operation = data.get("operation")
-        finding_ids = data.get("finding_ids", [])
-
-        if not finding_ids:
-            return jsonify({"success": False, "message": "No findings selected"}), 400
-
-        if operation == "change_state":
-            state = data.get("new_state")
-            if state not in STATE_TO_DECISION:
-                return jsonify({"success": False, "message": "Invalid state"}), 400
-
-            action, resolution = STATE_TO_DECISION[state]
-            comment = data.get("comment", "")
-            user = session.get("last_user") or session.get("user", "anonymous")
-            findings_by_id = {f["id"]: f for f in _project_impact(pid)["current_results"]}
-            updated = 0
-            for fid in finding_ids:
-                if fid not in findings_by_id:
-                    continue
-                store.add_audit(pid, fid, action, resolution, comment, user)
-                if resolution == "CONFIRMED":
-                    _capture_confirmed_bypass(pid, findings_by_id[fid], user)
-                updated += 1
-
-            return jsonify({
-                "success": True,
-                "message": f"Updated {updated} finding(s)",
-                "count": updated,
-            })
-
-        return jsonify({"success": False, "message": "Unknown operation"}), 400
-    except Exception as e:
-        logger.error(f"Error in bulk operations: {str(e)}")
-        return jsonify({"success": False, "message": str(e)}), 500
+    results = []
+    for project in store.list_projects():
+        pid = project["id"]
+        for finding in store.get_scan(pid)["results"]:
+            if (query in finding.get("queryName", "").lower()
+                    or query in finding.get("id", "").lower()
+                    or query in str(finding.get("severity", "")).lower()):
+                results.append({
+                    "project_id": pid,
+                    "project_name": project.get("name"),
+                    "finding_id": finding.get("id"),
+                    "query": finding.get("queryName"),
+                    "severity": finding.get("severity"),
+                    "state": finding.get("state"),
+                })
+                if len(results) >= _SEARCH_RESULT_LIMIT:
+                    break
+        if len(results) >= _SEARCH_RESULT_LIMIT:
+            break
+    return jsonify({"results": results})
 
 
 @app.route("/api/projects/compare")
 @login_required
 def api_compare_projects():
-    """Compare statistics across multiple projects."""
+    """Side-by-side severity/impact comparison across every project, for the
+    analytics view."""
+    comparison = []
+    for project in store.list_projects():
+        pid = project["id"]
+        impact = _project_impact(pid)
+        current_results = impact.pop("current_results")
+
+        severity_counts: dict[str, int] = {}
+        for f in current_results:
+            severity_counts[f.get("severity", "INFO")] = severity_counts.get(f.get("severity", "INFO"), 0) + 1
+
+        comparison.append({
+            "project_id": pid,
+            "project_name": project.get("name"),
+            "total_findings": impact["total"],
+            "critical": severity_counts.get("CRITICAL", 0),
+            "high": severity_counts.get("HIGH", 0),
+            "overrides_applied": impact["overrides_applied"],
+            "downgraded": impact["downgraded"],
+            "surfaced": impact["surfaced"],
+        })
+
+    return jsonify({"projects": comparison})
+
+
+_MAX_MESSAGE_CHARS = 4000
+_MAX_HISTORY_TURNS_IN = 8
+
+
+@app.route("/api/assistant/chat", methods=["POST"])
+@login_required
+def api_assistant_chat():
+    """The floating CxQL Assistant widget (every page, see base.html). Answers
+    are grounded in the bundled CxQL API Guide (see cxql_assistant.py) plus,
+    optionally, the qualified function names of whichever finding's taint path
+    the caller currently has open (see audit()'s assistant_context)."""
+    data = request.get_json(silent=True) or {}
+    message = (data.get("message") or "").strip()
+    if not message:
+        return jsonify({"error": "Message is required."}), 400
+    if len(message) > _MAX_MESSAGE_CHARS:
+        return jsonify({"error": f"Message is too long (limit {_MAX_MESSAGE_CHARS} characters)."}), 400
+
+    raw_history = data.get("history") or []
+    history = [
+        {"role": h["role"], "content": str(h["content"])[:_MAX_MESSAGE_CHARS]}
+        for h in raw_history[-_MAX_HISTORY_TURNS_IN:]
+        if isinstance(h, dict) and h.get("role") in ("user", "assistant") and h.get("content")
+    ]
+    context = data.get("context") if isinstance(data.get("context"), dict) else None
+
     try:
-        projects = store.list_projects()
-        comparison = []
-        
-        for project in projects:
-            pid = project["id"]
-            impact = _project_impact(pid)
-            current_results = impact.get("current_results", [])
-            
-            severity_counts = {}
-            for f in current_results:
-                sev = f.get("severity", "INFO")
-                severity_counts[sev] = severity_counts.get(sev, 0) + 1
-            
-            comparison.append({
-                "project_id": pid,
-                "project_name": project.get("name"),
-                "total_findings": impact.get("total", 0),
-                "critical": severity_counts.get("CRITICAL", 0),
-                "high": severity_counts.get("HIGH", 0),
-                "overrides_applied": impact.get("overrides_applied", 0),
-                "downgraded": impact.get("downgraded", 0),
-                "surfaced": impact.get("surfaced", 0)
-            })
-        
-        return jsonify({"projects": comparison})
-    except Exception as e:
-        logger.error(f"Error comparing projects: {str(e)}")
-        return jsonify({"error": str(e)}), 500
+        result = answer_question(_assistant_cfg, message, history=history, context=context)
+        return jsonify(result)
+    except (requests.exceptions.RequestException, ValueError, KeyError, IndexError) as e:
+        # Same failure contract as pipeline.py's classifier calls and
+        # summarizer.py's summarize_run: a flaky live backend degrades to a
+        # message, it never turns into a hard 500 for what's just a chat reply.
+        logger.warning("assistant chat failed: %s", e)
+        return jsonify({"error": "The assistant couldn't answer that just now."}), 500
 
 
 def main() -> None:

@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}Comment bank - Checkmarx TrueSignal{% endblock %}
+{% block content %}
+  <div class="page-head">
+    <div>
+      <h1>Comment bank</h1>
+      <p class="subtitle">
+        Predefined, admin-written comments reviewers can pick on a finding's audit page instead of the
+        heuristic AI-suggestion text — for more accurate, consistent notes on why a finding was resolved
+        the way it was.
+      </p>
+    </div>
+    <a class="btn" href="{{ url_for('dashboard') }}">&larr; Dashboard</a>
+  </div>
+
+  <div class="section-label">Add a comment</div>
+  <div class="card">
+    <form method="post">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input type="hidden" name="action" value="add">
+      <label class="small">Attack class
+        <select name="attack_class" required>
+          {% for c in attack_classes %}<option value="{{ c }}">{{ c }}</option>{% endfor %}
+        </select>
+      </label>
+      <label class="small">Resolution
+        <select name="resolution" required>
+          {% for r in resolutions %}<option value="{{ r }}">{{ r.replace('_', ' ')|title }}</option>{% endfor %}
+        </select>
+      </label>
+      <label class="small">Language
+        <select name="language" required>
+          {% for l in languages %}<option value="{{ l }}">{{ l|title }}</option>{% endfor %}
+        </select>
+      </label>
+      <label class="small">Short label <span class="faint">(shown in the picker)</span>
+        <input type="text" name="label" placeholder="e.g. Sanitized via allow-list" required>
+      </label>
+      <label class="small">Comment text <span class="faint">(inserted into the audit comment field)</span>
+        <textarea name="text" rows="3" placeholder="e.g. Goes through the numeric allow-list sanitizer before reaching the query — safe." required></textarea>
+      </label>
+      <button class="btn btn-primary" type="submit">Add comment</button>
+    </form>
+  </div>
+
+  <div class="section-label">Comments ({{ comments|length }})</div>
+  <div class="card">
+    {% if not comments %}
+      <p class="faint small">No predefined comments yet — add one above.</p>
+    {% endif %}
+    {% for c in comments %}
+      <div class="learn-row">
+        <div>
+          <div class="item-head">
+            <span class="pill pill-info">{{ c.attack_class }}</span>
+            <span class="pill {{ 'pill-downgraded' if c.resolution == 'NOT_EXPLOITABLE' else 'pill-confirmed' if c.resolution == 'CONFIRMED' else 'pill-warn' }}">
+              {{ c.resolution.replace('_', ' ')|title }}
+            </span>
+            <span class="pill pill-open">{{ c.get('language', '—') }}</span>
+            <strong>{{ c.label }}</strong>
+          </div>
+          <p class="small dim" style="margin: 4px 0 8px">{{ c.text }}</p>
+          <div class="faint small" style="margin-bottom: 8px">added by {{ c.created_by }}</div>
+          <form method="post" class="row-actions">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="action" value="delete">
+            <input type="hidden" name="comment_id" value="{{ c.id }}">
+            <button class="btn" type="submit">Delete</button>
+          </form>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+{% endblock %}

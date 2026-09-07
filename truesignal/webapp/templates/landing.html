@@ -24,12 +24,13 @@
   <section class="lp-hero-section">
     <div class="lp-hero">
       <div>
-        <span class="lp-eyebrow"><span class="dot"></span>SAST triage, verified</span>
+        <span class="lp-eyebrow"><span class="dot"></span>Self-tuning &middot; evidence-gated &middot; org-wide visibility</span>
         <h1>Turn your SAST backlog into a list that <em>actually matters</em>.</h1>
         <p class="lp-hero-sub">
           TrueSignal learns your codebase's real sanitizers and sources, verifies findings
           against actual taint paths, and lets your team audit and apply overrides safely —
-          with a full ledger and nothing ever applied without review.
+          with a full ledger and nothing ever applied without review. The Attack Surface Radar
+          then shows, across every project, exactly where exposure still outruns what it's learned.
         </p>
         <div class="lp-hero-ctas">
           <a class="btn btn-primary" href="{{ url_for('login') }}">Get Started &rarr;</a>
@@ -96,6 +97,37 @@
         </div>
         <h3>Full ledger, full rollback</h3>
         <p>Every applied override is logged and reversible — see exactly what changed and why.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="lp-section lp-radar-section">
+    <div class="lp-radar-card">
+      <div class="lp-radar-copy">
+        <span class="lp-eyebrow"><span class="dot"></span>Signature view</span>
+        <h2>See your whole attack surface, not just one project's backlog.</h2>
+        <p>
+          The Attack Surface Radar overlays every project's <strong>open exposure</strong> per attack
+          class against how much of that class TrueSignal has actually <strong>learned and applied
+          overrides for</strong> &mdash; six spokes, two polygons, one answer: where the next audit
+          pass pays off most.
+        </p>
+        <a class="btn btn-primary" href="{{ url_for('login') }}">Open the radar &rarr;</a>
+      </div>
+      <div class="lp-radar-visual" aria-hidden="true">
+        <svg viewBox="0 0 220 220" width="220" height="220">
+          <polygon points="110,20 197,66 197,154 110,200 23,154 23,66" fill="none" stroke="rgba(255,255,255,0.14)"/>
+          <polygon points="110,53 164,82 164,138 110,167 56,138 56,82" fill="none" stroke="rgba(255,255,255,0.14)"/>
+          <polygon points="110,86 131,98 131,122 110,134 89,122 89,98" fill="none" stroke="rgba(255,255,255,0.14)"/>
+          <line x1="110" y1="110" x2="110" y2="20" stroke="rgba(255,255,255,0.14)"/>
+          <line x1="110" y1="110" x2="197" y2="66" stroke="rgba(255,255,255,0.14)"/>
+          <line x1="110" y1="110" x2="197" y2="154" stroke="rgba(255,255,255,0.14)"/>
+          <line x1="110" y1="110" x2="110" y2="200" stroke="rgba(255,255,255,0.14)"/>
+          <line x1="110" y1="110" x2="23" y2="154" stroke="rgba(255,255,255,0.14)"/>
+          <line x1="110" y1="110" x2="23" y2="66" stroke="rgba(255,255,255,0.14)"/>
+          <polygon points="110,35 178,76 185,145 110,182 45,140 38,80" fill="#f0685f" fill-opacity="0.16" stroke="#f0685f" stroke-width="2"/>
+          <polygon points="110,68 145,90 148,128 110,150 74,126 72,90" fill="#4fbf82" fill-opacity="0.2" stroke="#4fbf82" stroke-width="2"/>
+        </svg>
       </div>
     </div>
   </section>

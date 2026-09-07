@@ -32,6 +32,7 @@
             {% if e.can_rollback and current_user_label == 'Admin' %}
               <form method="post" action="{{ url_for('rollback', pid=pid) }}"
                     onsubmit="return confirm('Roll back this override? Findings it affected return to their pre-override state.');">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <input type="hidden" name="name" value="{{ ov.name }}">
                 <button class="btn btn-small btn-danger" type="submit">Roll back</button>
               </form>

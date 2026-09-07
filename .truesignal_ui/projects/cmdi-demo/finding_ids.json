@@ -1,7 +1,0 @@
-{
-  "next": 1003,
-  "map": {
-    "ReportServlet.generateRaw": "CX-1001",
-    "ReportServlet.generateReport": "CX-1002"
-  }
-}

@@ -42,6 +42,24 @@ html, body.lp-body {
   background: radial-gradient(circle at 82% 15%, color-mix(in srgb, var(--accent) 22%, transparent), transparent 60%),
               var(--bg);
 }
+.lp-hero-section::before {
+  content: "";
+  position: absolute;
+  inset: -10% -10% auto -10%;
+  height: 140%;
+  background:
+    radial-gradient(circle at 18% 30%, color-mix(in srgb, var(--accent) 16%, transparent), transparent 45%),
+    radial-gradient(circle at 70% 70%, color-mix(in srgb, var(--success) 10%, transparent), transparent 50%);
+  animation: lp-ambient-drift 16s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+@keyframes lp-ambient-drift {
+  from { transform: translate(-2%, -1%) scale(1); opacity: 0.7; }
+  to   { transform: translate(2%, 1.5%) scale(1.06); opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .lp-hero-section::before { animation: none; }
+}
 .lp-hero {
   max-width: 1180px;
   margin: 0 auto;
@@ -106,6 +124,14 @@ html, body.lp-body {
   width: 320px; height: 320px;
   background: radial-gradient(circle, color-mix(in srgb, var(--accent) 55%, transparent), transparent 70%);
   filter: blur(6px);
+  animation: lp-panel-pulse 4.5s ease-in-out infinite;
+}
+@keyframes lp-panel-pulse {
+  0%, 100% { opacity: 0.85; transform: scale(1); }
+  50%      { opacity: 1; transform: scale(1.08); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .lp-panel::before { animation: none; }
 }
 .lp-panel-badge {
   position: relative;
@@ -162,6 +188,43 @@ html, body.lp-body {
 }
 .lp-feature h3 { margin: 0 0 8px; font-size: 0.95rem; }
 .lp-feature p { margin: 0; color: var(--text-dim); font-size: 0.85rem; line-height: 1.55; }
+
+/* ---------- signature-feature callout (Attack Surface Radar) ---------- */
+
+.lp-radar-section { padding-top: 8px; }
+.lp-radar-card {
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  align-items: center;
+  gap: 32px;
+  border-radius: var(--radius-lg);
+  border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--header-border));
+  background: linear-gradient(160deg, #171233 0%, var(--header-bg) 60%, #0d0f18 100%);
+  box-shadow: var(--shadow-popover);
+  padding: 40px 40px;
+}
+.lp-radar-card::before {
+  content: "";
+  position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, transparent, var(--accent), #4fbf82, var(--accent), transparent);
+  background-size: 200% 100%;
+  animation: radar-scan 6s linear infinite;
+}
+.lp-radar-copy h2 { margin: 14px 0 14px; font-size: 1.5rem; letter-spacing: -0.01em; color: var(--text); }
+.lp-radar-copy p { color: var(--text-dim); line-height: 1.65; margin: 0 0 22px; max-width: 48ch; }
+.lp-radar-copy strong { color: var(--text); }
+.lp-radar-visual { display: flex; align-items: center; justify-content: center; }
+.lp-radar-visual svg { animation: lp-panel-pulse 4.5s ease-in-out infinite; }
+@media (max-width: 880px) {
+  .lp-radar-card { grid-template-columns: 1fr; padding: 32px 24px; text-align: center; }
+  .lp-radar-copy p { margin-left: auto; margin-right: auto; }
+  .lp-radar-visual { order: -1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .lp-radar-card::before, .lp-radar-visual svg { animation: none; }
+}
 
 /* ---------- footer ---------- */
 

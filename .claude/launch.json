@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "truesignal-ui",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["-m", "truesignal.webapp.server"],
+      "port": 5000
+    }
+  ]
+}

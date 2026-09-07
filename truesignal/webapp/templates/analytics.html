@@ -47,6 +47,20 @@
   </div>
 </div>
 
+<div class="section-label">Attack Surface Radar</div>
+<div class="card chart-card radar-card">
+  <div class="radar-card-head">
+    <h3>Exposure vs. learned coverage, by attack class</h3>
+    <p class="dim small" style="margin:0">
+      Where the red "open exposure" spoke reaches further out than the green "learned coverage" one,
+      TrueSignal still has open, non-downgraded findings in a class it hasn't proven any sanitizer/source/sink
+      overrides for yet &mdash; that gap is where a reviewer's next audit pass pays off most.
+    </p>
+  </div>
+  <div id="chart-risk-radar"></div>
+  <script type="application/json" data-chart-for="chart-risk-radar" data-chart-type="radar">{{ radar_chart|tojson }}</script>
+</div>
+
 <div class="section-label">Project Comparison</div>
 <div class="grid-wrap">
   <table class="grid" id="comparison-table">
@@ -71,10 +85,12 @@
   <div class="card chart-card">
     <h3>Severity Distribution</h3>
     <div id="chart-severity"></div>
+    <script type="application/json" data-chart-for="chart-severity" data-chart-type="donut">{{ {"segments": severity_chart}|tojson }}</script>
   </div>
   <div class="card chart-card">
     <h3>State Distribution</h3>
     <div id="chart-state"></div>
+    <script type="application/json" data-chart-for="chart-state" data-chart-type="donut">{{ {"segments": state_chart}|tojson }}</script>
   </div>
 </div>
 

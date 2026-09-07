@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% block title %}Audit {{ finding.id }} - Checkmarx TrueSignal{% endblock %}
+{% block assistant_context %}<script>window.TS_ASSISTANT_CONTEXT = {{ assistant_context | tojson }};</script>{% endblock %}
 {% block content %}
   <div class="page-head">
     <div>
@@ -52,6 +53,19 @@
     </div>
   </div>
 
+  {% if flow_method %}
+  <div class="card">
+    <h3>Where this happens <span class="dim small">source and sink together, in context</span></h3>
+    <p class="small dim" style="margin-top:0">
+      Each taint-path step above resolves in isolation, one call at a time — this is the method that
+      actually holds the whole flow, so you can see the source, any code in between, and the sink together
+      the way you'd read it in a real review.
+    </p>
+    <div class="dim small">{{ flow_method.qualified_name }} &middot; {{ flow_method.file }}:{{ flow_method.line }}</div>
+    <pre class="snippet">{{ flow_method.source }}</pre>
+  </div>
+  {% endif %}
+
   {% if suggestion %}
   <div class="card">
     <h3>AI suggestion <span class="dim small">not a decision &mdash; you choose</span></h3>
@@ -68,6 +82,7 @@
   <div class="card">
     <h3>Record an audit decision</h3>
     <form method="post">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
       <label>Result
         <select name="decision" required>
           <option value="not_exploitable" {{ "selected" if suggestion and suggestion.verdict == "not_exploitable" }}>Not Exploitable</option>
@@ -76,8 +91,21 @@
           <option value="to_verify" {{ "selected" if suggestion and suggestion.verdict == "to_verify" }}>To Verify</option>
         </select>
       </label>
+      {% if comment_options %}
+      <label>Predefined comment <span class="dim small">optional — replaces the comment below</span>
+        <div class="comment-bank-trigger-row">
+          <a class="btn" id="open-comment-bank-btn" target="_blank"
+             href="{{ url_for('comment_bank_picker', pid=pid, fid=finding.id) }}">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.8"/><path d="M20 20l-3.2-3.2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+            Browse comment bank
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M7 17 17 7M9 7h8v8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+          <span class="dim small" id="comment-bank-selected"></span>
+        </div>
+      </label>
+      {% endif %}
       <label>Comment
-        <textarea name="comment" rows="2" placeholder="e.g. goes through InputCleaner.sanitize, safe">{{ "AI suggestion: " + suggestion.reason if suggestion }}</textarea>
+        <textarea id="comment-textarea" name="comment" rows="2" placeholder="e.g. goes through InputCleaner.sanitize, safe">{{ "AI suggestion: " + suggestion.reason if suggestion }}</textarea>
       </label>
       <label>Your name
         <input type="text" name="user" value="{{ default_user }}" placeholder="auditor name">

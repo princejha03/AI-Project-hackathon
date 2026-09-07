@@ -31,4 +31,5 @@ packages = ["truesignal", "truesignal.webapp"]
 include-package-data = true
 
 [tool.setuptools.package-data]
+"truesignal" = ["data/*.txt"]
 "truesignal.webapp" = ["templates/*.html", "static/css/*.css", "static/js/*.js"]

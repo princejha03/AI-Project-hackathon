@@ -30,14 +30,22 @@ from .scanner import _bare, scan_methods
 UI_ROOT = PROJECT_ROOT / ".truesignal_ui"
 PROJECTS_ROOT = UI_ROOT / "projects"
 
-WEBSHOP_ID = "webshop"
+# One stable built-in demo id for anything (tests, docs) that just needs a
+# single seeded project to point at, rather than caring which one.
+DEMO_PROJECT_ID = "storefront-demo"
 
 # (project_id, display name, repo path relative to the project root)
 BUILTIN_DEMOS = [
-    (WEBSHOP_ID, "WebShop (built-in demo — SQL Injection)", "demos/demo-repo"),
-    ("cmdi-demo", "ReportServlet (built-in demo — Command Injection)", "demos/demo-repo-cmdi"),
-    ("toolbox-demo", "SecureApp (built-in demo — Path Traversal, XSS, SSRF, LDAP Injection)",
-     "demos/demo-repo-toolbox"),
+    (DEMO_PROJECT_ID, "StoreFront (built-in demo — CSRF, XSS, Open Redirect, Missing CSP Header, "
+     "Unsafe Target Blank, Client Dangerous File Inclusion, Client JQuery Deprecated Symbols)",
+     "demos/demo-repo-storefront"),
+    ("accountvault-demo", "AccountVault (built-in demo — Insufficiently Protected Credentials, "
+     "Missing HSTS Header, Trust Boundary Violation, Heap Inspection, "
+     "Use Of Broken Or Risky Cryptographic Algorithm)",
+     "demos/demo-repo-accountvault"),
+    ("docexchange-demo", "DocExchange (built-in demo — Path Traversal, Improper Restriction Of XXE "
+     "Reflection, Log Forging, Privacy Violation)",
+     "demos/demo-repo-docexchange"),
 ]
 
 # Distinctive code signatures that mark a passthrough node as a genuine

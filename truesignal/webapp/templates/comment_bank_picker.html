@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block title %}Browse comment bank - Checkmarx TrueSignal{% endblock %}
+{% block content %}
+  <div class="page-head">
+    <div>
+      <h1>Browse comment bank</h1>
+      <p class="subtitle">
+        Picking a comment below sends it back to the audit page for <code>{{ finding.id }}</code>
+        ({{ finding.queryName }}) and closes this tab.
+      </p>
+    </div>
+    <button class="btn" type="button" onclick="window.close()">Close tab</button>
+  </div>
+
+  <div class="card">
+    <form method="get" class="comment-bank-filters">
+      <label class="small">Search <span class="faint">(label or comment text)</span>
+        <input type="text" name="q" value="{{ selected_q }}" placeholder="e.g. allow-list, encoder&hellip;">
+      </label>
+      <label class="small">Vulnerability
+        <select name="attack_class">
+          <option value="">All vulnerabilities</option>
+          {% for c in attack_classes %}
+            <option value="{{ c }}" {{ "selected" if c == selected_attack_class }}>{{ c.replace('_', ' ')|title }}</option>
+          {% endfor %}
+        </select>
+      </label>
+      <label class="small">Language
+        <select name="language">
+          <option value="">All languages</option>
+          {% for l in languages %}
+            <option value="{{ l }}" {{ "selected" if l == selected_language }}>{{ l|title }}</option>
+          {% endfor %}
+        </select>
+      </label>
+      <button class="btn btn-primary" type="submit">Filter</button>
+      {% if selected_q or selected_attack_class or selected_language %}
+        <a class="btn" href="{{ url_for('comment_bank_picker', pid=pid, fid=fid) }}">Clear filters</a>
+      {% endif %}
+    </form>
+  </div>
+
+  <div class="section-label">{{ comments|length }} comment{{ '' if comments|length == 1 else 's' }}</div>
+  <div class="card">
+    {% if not comments %}
+      <p class="faint small">No comments match these filters.</p>
+    {% endif %}
+    {% for c in comments %}
+      <div class="learn-row comment-bank-row">
+        <div>
+          <div class="item-head">
+            <span class="pill pill-info">{{ c.attack_class.replace('_', ' ')|title }}</span>
+            <span class="pill {{ 'pill-downgraded' if c.resolution == 'NOT_EXPLOITABLE' else 'pill-confirmed' if c.resolution == 'CONFIRMED' else 'pill-warn' }}">
+              {{ c.resolution.replace('_', ' ')|title }}
+            </span>
+            <span class="pill pill-open">{{ c.get('language', '—') }}</span>
+            {% if attack_class_hint and c.attack_class == attack_class_hint %}<span class="pill pill-open">Suggested</span>{% endif %}
+            <strong>{{ c.label }}</strong>
+          </div>
+          <p class="small dim" style="margin: 4px 0 0">{{ c.text }}</p>
+        </div>
+        <button type="button" class="btn btn-primary comment-bank-use-btn"
+                data-text="{{ c.text }}"
+                data-decision="{{ decision_by_resolution.get(c.resolution, '') }}"
+                data-label="{{ c.label }}">
+          Use this comment
+        </button>
+      </div>
+    {% endfor %}
+  </div>
+{% endblock %}

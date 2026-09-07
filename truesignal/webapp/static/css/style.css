@@ -61,6 +61,12 @@
   --header-border: #1d212b;
   --header-text: #e7e9ee;
   --header-text-dim: #8b93a3;
+
+  /* Neon accent glow -- barely-there in light mode, since a colored blur
+     reads as a rendering artifact on a white background, not "futuristic". */
+  --glow-accent: rgba(67, 56, 202, 0.20);
+  --glow-danger: rgba(180, 35, 24, 0.20);
+  --glow-success: rgba(21, 128, 61, 0.20);
 }
 
 [data-theme="dark"] {
@@ -105,6 +111,12 @@
   --header-border: #1a1e27;
   --header-text: #e7e9ee;
   --header-text-dim: #7d8494;
+
+  /* Dark mode is this product's "AI security lab" surface -- the glow
+     reads as intentional here, not noise. */
+  --glow-accent: rgba(124, 116, 232, 0.55);
+  --glow-danger: rgba(240, 104, 95, 0.5);
+  --glow-success: rgba(79, 191, 130, 0.45);
 }
 
 * { box-sizing: border-box; }
@@ -173,7 +185,7 @@ a { color: var(--accent); }
 .topnav { display: flex; align-items: center; gap: 2px; margin-left: 8px; }
 .topnav-link { color: var(--header-text-dim); text-decoration: none; font-size: 0.83rem; font-weight: 550; padding: 6px 10px; border-radius: 6px; transition: background var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease); }
 .topnav-link:hover { color: var(--header-text); background: rgba(255, 255, 255, 0.06); }
-.topnav-link.active { color: var(--header-text); background: rgba(255, 255, 255, 0.1); }
+.topnav-link.active { color: var(--header-text); background: rgba(255, 255, 255, 0.1); box-shadow: inset 0 -2px 0 var(--accent), 0 0 10px var(--glow-accent); }
 @media (max-width: 640px) { .topnav { display: none; } }
 
 .search-trigger {
@@ -393,7 +405,8 @@ a { color: var(--accent); }
 .btn:hover { background: var(--surface-alt); border-color: var(--text-faint); }
 .btn:active { transform: translateY(0.5px) scale(0.98); }
 .btn-primary { background: var(--accent); border-color: var(--accent); color: var(--accent-contrast); }
-.btn-primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
+.btn-primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); box-shadow: 0 0 0 1px var(--accent), 0 0 16px var(--glow-accent); }
+.btn-primary:focus-visible { box-shadow: 0 0 0 1px var(--accent), 0 0 16px var(--glow-accent); }
 .btn-danger { background: transparent; border-color: var(--danger); color: var(--danger); }
 .btn-danger:hover { background: var(--danger-soft); }
 .btn-small { padding: 4px 9px; font-size: 0.76rem; }
@@ -492,21 +505,22 @@ code { background: var(--surface-sunken); color: var(--text); padding: 1px 5px; 
 
 .flow-source { border-color: color-mix(in srgb, var(--sev-critical) 55%, var(--border-strong)); }
 .flow-source .flow-node-icon { color: var(--sev-critical); }
-.flow-source.active { background: var(--danger-soft); border-color: var(--sev-critical); }
+.flow-source.active { background: var(--danger-soft); border-color: var(--sev-critical); box-shadow: 0 0 0 1px var(--sev-critical), 0 0 18px var(--glow-danger); }
 
 .flow-passthrough { border-color: color-mix(in srgb, var(--warning) 55%, var(--border-strong)); }
 .flow-passthrough .flow-node-icon { color: var(--warning); }
-.flow-passthrough.active { background: var(--warning-soft); border-color: var(--warning); }
+.flow-passthrough.active { background: var(--warning-soft); border-color: var(--warning); box-shadow: 0 0 0 1px var(--warning), 0 0 18px color-mix(in srgb, var(--warning) 45%, transparent); }
 
 .flow-sink { border-color: color-mix(in srgb, var(--accent) 55%, var(--border-strong)); }
 .flow-sink .flow-node-icon { color: var(--accent); }
-.flow-sink.active { background: var(--accent-soft); border-color: var(--accent); }
+.flow-sink.active { background: var(--accent-soft); border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent), 0 0 18px var(--glow-accent); }
 
 .flow-connector {
   flex: 0 0 auto; width: 40px; height: 2px; margin: 0 4px; position: relative;
   background-image: linear-gradient(to right, var(--accent) 50%, transparent 0%);
   background-size: 9px 2px; background-repeat: repeat-x; opacity: 0.7;
   animation: flow-move 0.7s linear infinite;
+  filter: drop-shadow(0 0 4px var(--glow-accent));
 }
 .flow-connector::after {
   content: ""; position: absolute; right: -1px; top: 50%; transform: translateY(-50%);
@@ -677,6 +691,38 @@ form input:disabled, form select:disabled, form textarea:disabled {
 .chart-total { fill: var(--text); font-weight: 700; font-size: 20px; font-family: var(--font-mono); }
 .chart-total-label { fill: var(--text-faint); font-size: 9px; text-transform: uppercase; letter-spacing: 0.06em; }
 .chart-axis-label { fill: var(--text-dim); font-size: 10px; }
+
+/* ---------- radar chart (Attack Surface Radar) ---------- */
+
+.radar-card {
+  position: relative;
+  overflow: hidden;
+  border-color: color-mix(in srgb, var(--accent) 30%, var(--border));
+}
+.radar-card::before {
+  content: "";
+  position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, transparent, var(--accent), var(--success), var(--accent), transparent);
+  background-size: 200% 100%;
+  animation: radar-scan 6s linear infinite;
+  opacity: 0.85;
+}
+@keyframes radar-scan {
+  from { background-position: 200% 0; }
+  to   { background-position: -200% 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .radar-card::before { animation: none; }
+}
+.radar-card-head { margin-bottom: 8px; }
+.radar-card-head h3 { margin-bottom: 6px; }
+.chart-radar-row { display: flex; align-items: center; gap: 24px; flex-wrap: wrap; justify-content: center; }
+.chart-radar { flex: 0 0 auto; max-width: 340px; filter: drop-shadow(0 0 14px color-mix(in srgb, var(--accent) 18%, transparent)); }
+.chart-radar-grid { fill: none; stroke: var(--border); stroke-width: 1; }
+.chart-radar-spoke { stroke: var(--border); stroke-width: 1; }
+.chart-radar-series { transition: opacity var(--dur-base) var(--ease); }
+.chart-radar-label { fill: var(--text-dim); font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.03em; }
+.chart-radar-legend { flex: 0 1 200px; }
 .chart-bar-value { fill: var(--text); font-size: 10px; font-weight: 600; font-family: var(--font-mono); }
 
 .gauge-row { display: flex; align-items: center; justify-content: center; }
@@ -816,7 +862,7 @@ form input:disabled, form select:disabled, form textarea:disabled {
   transform: translateY(-2px);
 }
 
-/* ---------- Modals (only .modal-overlay is live -- it's the loading backdrop) ---------- */
+/* ---------- Modals ---------- */
 
 .modal-overlay {
   position: fixed;
@@ -835,6 +881,21 @@ form input:disabled, form select:disabled, form textarea:disabled {
   opacity: 1;
   pointer-events: auto;
 }
+
+/* Comment-bank picker: a dedicated page (comment_bank_picker.html) opened
+   in its own tab from the audit page's "Browse comment bank" link, rather
+   than an in-page modal, so a reviewer can keep the audit page open
+   alongside it (see CommentBankPicker / CommentBankBrowsePage in
+   interactions.js). */
+
+.comment-bank-trigger-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+
+.comment-bank-filters { display: flex; align-items: flex-end; gap: 16px; flex-wrap: wrap; }
+.comment-bank-filters label { margin-bottom: 0; min-width: 200px; flex: 1; }
+.comment-bank-filters button, .comment-bank-filters a.btn { flex-shrink: 0; }
+
+.comment-bank-row { justify-content: space-between; align-items: center; gap: 20px; }
+.comment-bank-row .comment-bank-use-btn { flex-shrink: 0; }
 
 /* ---------- Stats Grid ---------- */
 
@@ -965,3 +1026,179 @@ form input:disabled, form select:disabled, form textarea:disabled {
 .stat-row .stat:nth-child(3), .hero-stats .hero-stat:nth-child(3), .chart-row .chart-card:nth-child(3) { animation-delay: 80ms; }
 .stat-row .stat:nth-child(4), .hero-stats .hero-stat:nth-child(4) { animation-delay: 120ms; }
 .stat-row .stat:nth-child(5), .hero-stats .hero-stat:nth-child(5) { animation-delay: 160ms; }
+
+/* ---------- CxQL Assistant (floating widget, every logged-in page) ---------- */
+
+@keyframes ts-pop-in {
+  from { opacity: 0; transform: translateY(12px) scale(0.94); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes ts-fade-up {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes ts-ping {
+  0%   { transform: scale(0.9); opacity: 1; }
+  70%  { transform: scale(1.9); opacity: 0; }
+  100% { transform: scale(1.9); opacity: 0; }
+}
+@keyframes ts-bounce {
+  0%, 60%, 100% { transform: translateY(0); opacity: 0.5; }
+  30% { transform: translateY(-4px); opacity: 1; }
+}
+
+.ts-assistant-toggle {
+  position: fixed; bottom: 22px; left: 22px; z-index: 900;
+  display: grid; place-items: center;
+  width: 56px; height: 56px; padding: 0; border-radius: 50%; border: none;
+  background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+  color: var(--accent-contrast); cursor: pointer;
+  box-shadow: var(--shadow-md), 0 0 0 1px color-mix(in srgb, var(--accent) 35%, transparent);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.ts-assistant-toggle:hover { transform: translateY(-2px) scale(1.04); box-shadow: var(--shadow-popover); }
+.ts-assistant-toggle:active { transform: translateY(0) scale(0.98); }
+.ts-assistant-toggle-icon-close, .ts-assistant-toggle-icon-open { grid-area: 1 / 1; transition: opacity 0.18s ease, transform 0.18s ease; }
+.ts-assistant-toggle-icon-close { opacity: 0; transform: rotate(-45deg) scale(0.6); }
+.ts-assistant-toggle-icon-open { opacity: 1; transform: rotate(0) scale(1); }
+.ts-assistant-toggle.is-open .ts-assistant-toggle-icon-open { opacity: 0; transform: rotate(45deg) scale(0.6); }
+.ts-assistant-toggle.is-open .ts-assistant-toggle-icon-close { opacity: 1; transform: rotate(0) scale(1); }
+.ts-assistant-ping {
+  position: absolute; top: -2px; right: -2px; width: 14px; height: 14px; border-radius: 50%;
+  background: var(--success, #22c55e); border: 2px solid var(--surface);
+}
+.ts-assistant-ping::after {
+  content: ""; position: absolute; inset: -2px; border-radius: 50%;
+  background: var(--success, #22c55e); animation: ts-ping 1.8s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+.ts-assistant-toggle.is-open .ts-assistant-ping,
+.ts-assistant-ping.is-dismissed { display: none; }
+
+.ts-assistant-panel {
+  position: fixed; bottom: 90px; left: 22px; z-index: 900;
+  width: 372px; max-width: calc(100vw - 32px); height: 520px; max-height: calc(100vh - 120px);
+  display: flex; flex-direction: column;
+  background: var(--surface); border: 1px solid var(--border-strong); border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-popover); overflow: hidden;
+  animation: ts-pop-in 0.22s cubic-bezier(0.16, 1, 0.3, 1) both;
+  transform-origin: bottom left;
+}
+/* `.ts-assistant-panel`'s own `display: flex` otherwise beats the UA
+   stylesheet's `[hidden] { display: none }` (author styles always win ties),
+   so the panel would stay visually open regardless of the `hidden`
+   attribute -- this rule has to win that fight explicitly. */
+.ts-assistant-panel[hidden] { display: none; }
+
+.ts-assistant-head {
+  display: flex; align-items: center; gap: 10px; flex-wrap: nowrap;
+  padding: 13px 10px 13px 14px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+  color: var(--accent-contrast);
+}
+.ts-assistant-avatar {
+  display: flex; align-items: center; justify-content: center; flex: none;
+  width: 34px; height: 34px; border-radius: 50%;
+  background: rgba(255, 255, 255, 0.22); color: var(--accent-contrast);
+}
+.ts-assistant-head-text { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+.ts-assistant-head strong { font-size: 0.88rem; }
+.ts-assistant-head .dim { color: rgba(255, 255, 255, 0.78); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ts-assistant-icon-btn {
+  border: none; background: transparent; color: rgba(255, 255, 255, 0.85); cursor: pointer;
+  padding: 6px; border-radius: var(--radius-sm); line-height: 0;
+}
+.ts-assistant-icon-btn:hover { background: rgba(255, 255, 255, 0.16); color: #fff; }
+
+.ts-assistant-messages {
+  flex: 1; overflow-y: auto; padding: 14px 16px; display: flex; flex-direction: column; gap: 14px;
+  background:
+    radial-gradient(circle at 0% 0%, color-mix(in srgb, var(--accent) 6%, transparent), transparent 55%),
+    var(--surface-alt);
+}
+
+.ts-assistant-welcome { animation: ts-fade-up 0.25s ease both; }
+.ts-assistant-welcome-card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg);
+  padding: 16px; box-shadow: var(--shadow-xs);
+}
+.ts-assistant-welcome-avatar {
+  width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, var(--accent), var(--accent-hover)); color: var(--accent-contrast);
+  margin-bottom: 10px;
+}
+.ts-assistant-welcome-card h4 { margin: 0 0 4px; font-size: 0.95rem; }
+.ts-assistant-welcome-card p { margin: 0 0 12px; font-size: 0.82rem; color: var(--text-dim); line-height: 1.5; }
+.ts-assistant-capabilities { list-style: none; margin: 0 0 14px; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.ts-assistant-capabilities li {
+  display: flex; align-items: flex-start; gap: 9px; font-size: 0.8rem; color: var(--text); line-height: 1.4;
+}
+.ts-assistant-capabilities .ts-assistant-cap-icon {
+  flex: none; width: 22px; height: 22px; border-radius: 7px; display: flex; align-items: center; justify-content: center;
+  background: var(--accent-soft); color: var(--accent); margin-top: 1px;
+}
+.ts-assistant-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.ts-assistant-chip {
+  border: 1px solid var(--border-strong); background: var(--surface-alt); color: var(--text);
+  font-size: 0.76rem; font-family: inherit; padding: 6px 11px; border-radius: 999px; cursor: pointer;
+  transition: background 0.12s ease, border-color 0.12s ease, color 0.12s ease;
+}
+.ts-assistant-chip:hover { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+
+.ts-assistant-msg { display: flex; gap: 8px; animation: ts-fade-up 0.2s ease both; }
+.ts-assistant-msg-user { justify-content: flex-end; }
+.ts-assistant-msg-assistant { justify-content: flex-start; }
+.ts-assistant-msg-avatar {
+  flex: none; width: 26px; height: 26px; border-radius: 50%; margin-top: 2px;
+  display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, var(--accent), var(--accent-hover)); color: var(--accent-contrast);
+}
+.ts-assistant-msg-col { display: flex; flex-direction: column; gap: 6px; min-width: 0; max-width: 84%; }
+.ts-assistant-msg-user .ts-assistant-msg-col { align-items: flex-end; }
+.ts-assistant-bubble {
+  padding: 9px 13px; font-size: 0.85rem; line-height: 1.5; word-break: break-word;
+}
+.ts-assistant-msg-user .ts-assistant-bubble {
+  background: linear-gradient(135deg, var(--accent), var(--accent-hover)); color: var(--accent-contrast);
+  border-radius: 14px 14px 3px 14px;
+}
+.ts-assistant-msg-assistant .ts-assistant-bubble {
+  background: var(--surface); border: 1px solid var(--border); color: var(--text);
+  border-radius: 14px 14px 14px 3px;
+}
+
+.ts-assistant-typing .ts-assistant-bubble { display: flex; align-items: center; gap: 4px; padding: 12px 14px; }
+.ts-assistant-typing span {
+  width: 6px; height: 6px; border-radius: 50%; background: var(--text-faint);
+  animation: ts-bounce 1.1s ease-in-out infinite;
+}
+.ts-assistant-typing span:nth-child(2) { animation-delay: 0.15s; }
+.ts-assistant-typing span:nth-child(3) { animation-delay: 0.3s; }
+
+.ts-assistant-snippet-wrap { width: 100%; }
+.ts-assistant-snippet { margin: 0; max-height: 180px; }
+.ts-assistant-copy-btn { padding: 4px 10px; font-size: 0.72rem; margin-top: 6px; }
+.ts-assistant-sources { max-width: 100%; }
+
+.ts-assistant-form {
+  display: flex; gap: 8px; align-items: flex-end; padding: 10px; border-top: 1px solid var(--border);
+  background: var(--surface);
+}
+.ts-assistant-form textarea {
+  flex: 1; resize: none; padding: 9px 12px; border: 1px solid var(--border-strong);
+  border-radius: 999px; font-family: inherit; font-size: 0.85rem;
+  background: var(--surface-alt); color: var(--text); max-height: 90px;
+}
+.ts-assistant-form textarea:focus { outline: 2px solid var(--accent); outline-offset: 1px; border-color: var(--accent); }
+.ts-assistant-send-btn {
+  flex: none; width: 36px; height: 36px; border-radius: 50%; border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, var(--accent), var(--accent-hover)); color: var(--accent-contrast);
+  transition: transform 0.12s ease;
+}
+.ts-assistant-send-btn:hover { transform: scale(1.06); }
+.ts-assistant-send-btn:active { transform: scale(0.95); }
+
+@media (max-width: 480px) {
+  .ts-assistant-panel { left: 8px; bottom: 84px; width: calc(100vw - 16px); }
+  .ts-assistant-toggle { left: 12px; bottom: 12px; }
+}

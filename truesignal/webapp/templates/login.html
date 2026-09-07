@@ -34,6 +34,7 @@
       <div class="demo-accounts">
         {% for a in demo_accounts %}
           <form method="post" action="{{ url_for('login') }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <input type="hidden" name="next" value="{{ next }}">
             <input type="hidden" name="username" value="{{ a.username }}">
             <input type="hidden" name="password" value="{{ a.password }}">
@@ -52,6 +53,7 @@
       <div class="auth-divider"><span>or sign in manually</span></div>
 
       <form method="post" action="{{ url_for('login') }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <input type="hidden" name="next" value="{{ next }}">
         <label>Username
           <input type="text" name="username" autocomplete="username" required>

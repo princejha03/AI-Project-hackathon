@@ -1,0 +1,16 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+
+# Runtime state -- JSON on disk, per-user/per-checkout, never shared
+.truesignal/
+.truesignal_ui/
+
+venv/
+.venv/
+env/
+.env
+
+training_data.jsonl
